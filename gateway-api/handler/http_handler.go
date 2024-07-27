@@ -1,33 +1,46 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/Kiyosh31/ms-ecommerce-common/utils"
+	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
 )
 
 type GatewayApiHandler struct {
+	userServiceClient userPb.UserServiceClient
 }
 
-func NewHandler() *GatewayApiHandler {
-	return &GatewayApiHandler{}
+func NewHandler(userServiceClient userPb.UserServiceClient) *GatewayApiHandler {
+	return &GatewayApiHandler{
+		userServiceClient: userServiceClient,
+	}
 }
 
 func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/v1/hello", h.sayHello)
-	mux.HandleFunc("GET /api/v1/hello/nomames", h.noMames)
-
+	mux.HandleFunc("POST /api/v1/user", h.createUser)
 }
 
-func (h *GatewayApiHandler) sayHello(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("nice")
+func (h *GatewayApiHandler) createUser(w http.ResponseWriter, r *http.Request) {
 
-}
+	var payload userPb.User
+	if err := utils.ReadJSON(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
-func (h *GatewayApiHandler) noMames(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("wooooow!")
+	if errs := validateUserPayload(&payload); len(errs) > 0 {
+		utils.WriteErrors(w, http.StatusBadRequest, errs)
+		return
+	}
 
+	res, err := h.userServiceClient.CreateUser(r.Context(), &userPb.CreateUserRequest{
+		User: &payload,
+	})
+	if err != nil {
+		utils.ManageRpcErrors(err, w)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, res)
 }
