@@ -1,0 +1,22 @@
+apiVersion: skaffold/v4beta11
+kind: Config
+metadata:
+  name: e-commerce
+build:
+  artifacts:
+    - image: gateway-api
+      context: gateway-api
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: "**/*"
+            src: .
+manifests:
+  rawYaml:
+    - k8s/*.yml
+portForward:
+  - resourceType: deployment
+    resourceName: gateway-depl
+    port: 3000
+    localPort: 3000
