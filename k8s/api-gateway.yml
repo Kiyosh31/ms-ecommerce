@@ -26,6 +26,11 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: GATEWAY_API_HTTP_ADRR
+            - name: USER_SERVICE_GRPC_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: USER_SERVICE_GRPC_ADDR
 ---
 apiVersion: v1
 kind: Service

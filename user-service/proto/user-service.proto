@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+option go_package="github.com/Kiyosh31/ms-ecommerce/user-service/userPb";
+
+package userPb;
+
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns (Response);
+  rpc GetUser(GetUserRequest) returns (Response);
+  rpc UpdateUser(UpdateUserRequest) returns (Response);
+  rpc DeleteUser(DeleteUserRequest) returns (Response);
+}
+
+message Address {
+  string id = 1;
+  string name = 2;
+  int64 zipCode = 3;
+  bool default = 4;
+}
+
+message Card {
+  string id = 1;
+  int64 number = 2;
+  int32 cvv= 3;
+  string expiration = 4;
+  bool default = 5;
+}
+
+message User {
+  string id = 1;
+  string name = 2;
+  string lastName = 3;
+  string birth = 4;
+  repeated Card cards = 5;
+  repeated Address address = 6;
+  string email = 7;
+  string password = 8;
+}
+
+message CreateUserRequest {
+  User user = 1;
+}
+
+message GetUserRequest {
+
+}
+
+message UpdateUserRequest {
+  User user = 1;
+}
+
+message DeleteUserRequest {
+
+}
+
+message Response {
+  string message = 1;
+  User user = 2;
+}
