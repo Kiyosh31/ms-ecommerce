@@ -3,26 +3,33 @@ package config
 import "github.com/Kiyosh31/ms-ecommerce-common/utils"
 
 type envVars struct {
-	USER_SERVICE_GRPC_ADDR string `env:"GATEWAY_API_HTTP_ADRR"`
+	USER_SERVICE_GRPC_ADDR           string
+	USER_SERVICE_DATABASE_NAME       string
+	USER_SERVICE_DATABASE_COLLECTION string
 }
 
-var GlobalEnvVars envVars
+func LoadEnvVars() (envVars, error) {
 
-func LoadEnvVars() []error {
-	var errors []error
-
-	envVarsMap := map[string]*string{
-		"USER_SERVICE_GRPC_ADDR": &GlobalEnvVars.USER_SERVICE_GRPC_ADDR,
+	USER_SERVICE_GRPC_ADDR, err := utils.GetEnvVar("USER_SERVICE_GRPC_ADDR")
+	if err != nil {
+		return envVars{}, err
 	}
 
-	for key, addr := range envVarsMap {
-		val, err := utils.GetEnvVar(key)
-		if err != nil {
-			errors = append(errors, err)
-		} else {
-			*addr = val
-		}
+	// USER_SERVICE_GRPC_ADDR := "localhost:3001"
+
+	USER_SERVICE_DATABASE_NAME, err := utils.GetEnvVar("USER_SERVICE_DATABASE_NAME")
+	if err != nil {
+		return envVars{}, err
 	}
 
-	return errors
+	USER_SERVICE_DATABASE_COLLECTION, err := utils.GetEnvVar("USER_SERVICE_DATABASE_COLLECTION")
+	if err != nil {
+		return envVars{}, err
+	}
+
+	return envVars{
+		USER_SERVICE_GRPC_ADDR:           USER_SERVICE_GRPC_ADDR,
+		USER_SERVICE_DATABASE_NAME:       USER_SERVICE_DATABASE_NAME,
+		USER_SERVICE_DATABASE_COLLECTION: USER_SERVICE_DATABASE_COLLECTION,
+	}, nil
 }

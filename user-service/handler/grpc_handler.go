@@ -33,26 +33,31 @@ func (c *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.Crea
 			Name:     "david",
 			LastName: "Garcia",
 			Birth:    "123456",
-			Cards: []*userPb.Card{
-				{
-					Id:         "1",
-					Number:     1234567890,
-					Cvv:        123,
-					Expiration: "1234",
-					Default:    true,
+			Cards: &userPb.CardList{
+				Cards: []*userPb.Card{
+					{
+						Id:         "1",
+						Number:     1234567890,
+						Cvv:        123,
+						Expiration: "1234",
+						Default:    true,
+					},
 				},
 			},
-			Address: []*userPb.Address{
-				{
-					Id:      "1",
-					Name:    "street",
-					ZipCode: 1234,
-					Default: true,
+			Addresses: &userPb.AddressList{
+				Address: []*userPb.Address{
+					{
+						Id:      "1",
+						Name:    "street",
+						ZipCode: 1234,
+						Default: true,
+					},
 				},
 			},
 			Email:    "email",
 			Password: "password",
 		},
 	}
+
 	return res, nil
 }

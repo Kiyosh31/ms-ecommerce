@@ -1,13 +1,9 @@
 package service
 
 type UserService struct {
-	addr string
+	grpcAddr string
 }
 
-func NewUserService(addr string) *UserService {
-	return &UserService{addr: addr}
-}
-
-func (s *UserService) Run(grpcAddr string) {
-
+func NewUserService(grpcAddr string) *UserService {
+	return &UserService{grpcAddr: grpcAddr}
 }

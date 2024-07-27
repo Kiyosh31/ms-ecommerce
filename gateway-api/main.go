@@ -1,22 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/config"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/service"
 )
 
 func main() {
-	errors := config.LoadEnvVars()
-	if len(errors) > 0 {
-		for _, err := range errors {
-			fmt.Println("Error loading environment variables:", err)
-		}
-		os.Exit(1)
+	vars, err := config.LoadEnvVars()
+	if err != nil {
+		log.Fatalf("Could not load env vars: %v", err)
 	}
 
-	svc := service.NewGatewayHttpService(config.GlobalEnvVars.GATEWAY_API_HTTP_ADRR)
+	svc := service.NewGatewayHttpService(vars.GATEWAY_API_HTTP_ADRR, vars.USER_SERVICE_GRPC_ADDR)
 	svc.Run()
 }

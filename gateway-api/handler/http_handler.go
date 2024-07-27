@@ -1,10 +1,11 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
-	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
+	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 )
 
 type GatewayApiHandler struct {
@@ -18,11 +19,14 @@ func NewHandler(userServiceClient userPb.UserServiceClient) *GatewayApiHandler {
 }
 
 func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
+	// User endpoints
 	mux.HandleFunc("POST /api/v1/user", h.createUser)
+	mux.HandleFunc("GET /api/v1/user/{userId}", h.getUser)
+	mux.HandleFunc("PUT /api/v1/user/{userId}", h.updateUser)
+	mux.HandleFunc("DELETE /api/v1/user/{userId}", h.deleteUser)
 }
 
 func (h *GatewayApiHandler) createUser(w http.ResponseWriter, r *http.Request) {
-
 	var payload userPb.User
 	if err := utils.ReadJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err.Error())
@@ -34,13 +38,27 @@ func (h *GatewayApiHandler) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("llegamos aqui: %v", &payload)
 	res, err := h.userServiceClient.CreateUser(r.Context(), &userPb.CreateUserRequest{
 		User: &payload,
 	})
+	log.Println(res)
 	if err != nil {
 		utils.ManageRpcErrors(err, w)
 		return
 	}
 
 	utils.WriteJSON(w, http.StatusOK, res)
+}
+
+func (h *GatewayApiHandler) getUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *GatewayApiHandler) updateUser(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (h *GatewayApiHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
+
 }

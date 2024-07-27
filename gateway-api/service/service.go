@@ -4,34 +4,36 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Kiyosh31/ms-ecommerce/gateway-api/config"
+	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/handler"
-	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GatewayService struct {
-	addr string
+	httpAddr           string
+	userClientGrpcAddr string
 }
 
-func NewGatewayHttpService(addr string) *GatewayService {
+func NewGatewayHttpService(httpAddr string, userClientGrpcAddr string) *GatewayService {
 	return &GatewayService{
-		addr: addr,
+		httpAddr:           httpAddr,
+		userClientGrpcAddr: userClientGrpcAddr,
 	}
 }
 
 func (s *GatewayService) Run() {
-	userServiceGrpcClient, conn := runUserServiceGrpcClient(config.GlobalEnvVars.USER_SERVICE_GRPC_ADDR)
+	userServiceGrpcClient, conn := runUserServiceGrpcClient(s.userClientGrpcAddr)
 	defer conn.Close()
 
 	mux := http.NewServeMux()
 	handler := handler.NewHandler(userServiceGrpcClient)
 	handler.RegisterRoutes(mux)
 
-	log.Println("Http server starting at: ", s.addr)
+	log.Println("Http server starting at: ", s.httpAddr)
 
-	if err := http.ListenAndServe(s.addr, mux); err != nil {
+	if err := http.ListenAndServe(s.httpAddr, mux); err != nil {
 		log.Fatalf("Failed to start http server: %v", err)
 	}
 }

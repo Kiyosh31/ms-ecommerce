@@ -1,32 +1,27 @@
 package config
 
-import (
-	"github.com/Kiyosh31/ms-ecommerce-common/utils"
-)
+import "github.com/Kiyosh31/ms-ecommerce-common/utils"
 
 type envVars struct {
-	GATEWAY_API_HTTP_ADRR  string `env:"GATEWAY_API_HTTP_ADRR"`
-	USER_SERVICE_GRPC_ADDR string `env:"USER_SERVICE_GRPC_ADDR"`
+	GATEWAY_API_HTTP_ADRR  string
+	USER_SERVICE_GRPC_ADDR string
 }
 
-var GlobalEnvVars envVars
-
-func LoadEnvVars() []error {
-	var errors []error
-
-	envVarsMap := map[string]*string{
-		"GATEWAY_API_HTTP_ADDR":  &GlobalEnvVars.GATEWAY_API_HTTP_ADRR,
-		"USER_SERVICE_GRPC_ADDR": &GlobalEnvVars.USER_SERVICE_GRPC_ADDR,
+func LoadEnvVars() (envVars, error) {
+	GATEWAY_API_HTTP_ADRR, err := utils.GetEnvVar("GATEWAY_API_HTTP_ADRR")
+	if err != nil {
+		return envVars{}, err
 	}
+	// GATEWAY_API_HTTP_ADRR := "localhost:3000"
 
-	for key, addr := range envVarsMap {
-		val, err := utils.GetEnvVar(key)
-		if err != nil {
-			errors = append(errors, err)
-		} else {
-			*addr = val
-		}
+	USER_SERVICE_GRPC_ADDR, err := utils.GetEnvVar("USER_SERVICE_GRPC_ADDR")
+	if err != nil {
+		return envVars{}, err
 	}
+	// USER_SERVICE_GRPC_ADDR := "localhost:3001"
 
-	return errors
+	return envVars{
+		GATEWAY_API_HTTP_ADRR:  GATEWAY_API_HTTP_ADRR,
+		USER_SERVICE_GRPC_ADDR: USER_SERVICE_GRPC_ADDR,
+	}, nil
 }
