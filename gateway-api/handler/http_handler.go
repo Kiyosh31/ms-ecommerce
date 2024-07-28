@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
@@ -28,6 +27,7 @@ func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
 
 func (h *GatewayApiHandler) createUser(w http.ResponseWriter, r *http.Request) {
 	var payload userPb.User
+
 	if err := utils.ReadJSON(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err.Error())
 		return
@@ -38,17 +38,13 @@ func (h *GatewayApiHandler) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("llegamos aqui: %v", &payload)
-	res, err := h.userServiceClient.CreateUser(r.Context(), &userPb.CreateUserRequest{
-		User: &payload,
-	})
-	log.Println(res)
+	res, err := h.userServiceClient.CreateUser(r.Context(), mapCreateUserRequestToPb(&payload))
 	if err != nil {
-		utils.ManageRpcErrors(err, w)
+		utils.WriteRpcError(err, w)
 		return
 	}
 
-	utils.WriteJSON(w, http.StatusOK, res)
+	utils.WriteResponse(w, http.StatusOK, res)
 }
 
 func (h *GatewayApiHandler) getUser(w http.ResponseWriter, r *http.Request) {

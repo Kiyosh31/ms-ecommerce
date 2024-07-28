@@ -1,9 +1,15 @@
 package service
 
+import "github.com/Kiyosh31/ms-ecommerce/user-service/store"
+
 type UserService struct {
-	grpcAddr string
+	GrpcAddr  string
+	UserStore store.UserStore
 }
 
-func NewUserService(grpcAddr string) *UserService {
-	return &UserService{grpcAddr: grpcAddr}
+func NewUserService(grpcAddr string, userStore store.UserStore) *UserService {
+	return &UserService{
+		GrpcAddr:  grpcAddr,
+		UserStore: userStore,
+	}
 }

@@ -1,7 +1,9 @@
-github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240727203215-971ea97ede99 h1:K065khZTs+nDM276e8OcPmW/bUyLy5PZh3Jp1CJEnqw=
-github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240727203215-971ea97ede99/go.mod h1:Q6EHO4vjZhuw9hsvQbRE97prSCkRgPsZdgqpYWXijmg=
+github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240728032802-5b2c3f33b640 h1:EsYbqbnT5uIITE6Oa71xYL8MG87yX0LjpWuYpwH9xXI=
+github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240728032802-5b2c3f33b640/go.mod h1:zBHeZgH5BbqfWTKxkdP6H8yzCWaBoUUJRLhtjCstxck=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+golang.org/x/crypto v0.25.0 h1:ypSNr+bnYL2YhwoMt2zPxHFmbAN1KZs/njMG3hxUp30=
+golang.org/x/crypto v0.25.0/go.mod h1:T+wALwcMOSE0kXgUAnPAHqTLW+XHgcELELW8VaDgm/M=
 golang.org/x/net v0.27.0 h1:5K3Njcw06/l2y9vpGCSdcxWOYHOUk3dVNGDXN+FvAys=
 golang.org/x/net v0.27.0/go.mod h1:dDi0PyhWNoiUOrAS8uXv/vnScO4wnHQO4mj9fn/RytE=
 golang.org/x/sys v0.22.0 h1:RI27ohtqKCnwULzJLqkv897zojh5/DwS/ENaMzUOaWI=

@@ -26,6 +26,11 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: USER_SERVICE_GRPC_ADDR
+            - name: DB_CONNECTION_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: DB_CONNECTION_LINK
             - name: USER_SERVICE_DATABASE_NAME
               valueFrom:
                 secretKeyRef:
