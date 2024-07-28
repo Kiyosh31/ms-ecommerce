@@ -9,24 +9,30 @@ import (
 func validateUserPayload(payload *userPb.User) []error {
 	var errs []error
 
-	if payload.GetName() == "" {
-		errs = append(errs, errors.New("missing name"))
+	if payload.GetFirstName() == "" {
+		errs = append(errs, errors.New("missing first name"))
 	}
 
 	if payload.GetLastName() == "" {
 		errs = append(errs, errors.New("missing last name"))
 	}
 
-	if payload.GetBirth() == "" {
-		errs = append(errs, errors.New("missing birth"))
+	if payload.GetBirthDate() == "" {
+		errs = append(errs, errors.New("missing birth date"))
 	}
 
 	if payload.GetCards() != nil {
-		errs = append(errs, validateCards(payload.GetCards()))
+		err := validateCards(payload.GetCards())
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
 
 	if payload.GetAddresses() != nil {
-		errs = append(errs, validateAddress(payload.GetAddresses()))
+		err := validateAddress(payload.GetAddresses())
+		if err != nil {
+			errs = append(errs, err)
+		}
 	}
 
 	if payload.GetEmail() == "" {
@@ -40,10 +46,14 @@ func validateUserPayload(payload *userPb.User) []error {
 	return errs
 }
 
-func validateCards(cards *userPb.CardList) error {
-	for _, card := range cards.Cards {
-		if card.GetNumber() == 0 {
+func validateCards(cards []*userPb.Card) error {
+	for _, card := range cards {
+		if card.GetNumber() == "" {
 			return errors.New("card number is required")
+		}
+
+		if card.GetCardHolderName() == "" {
+			return errors.New("card holder name is required")
 		}
 
 		if card.GetCvv() == 0 {
@@ -54,7 +64,11 @@ func validateCards(cards *userPb.CardList) error {
 			return errors.New("card expiration is required")
 		}
 
-		if !card.GetDefault() {
+		if card.GetCardType() == "" {
+			return errors.New("card type is required")
+		}
+
+		if !card.GetIsDefault() {
 			return errors.New("card default is required")
 		}
 	}
@@ -62,8 +76,8 @@ func validateCards(cards *userPb.CardList) error {
 	return nil
 }
 
-func validateAddress(addresses *userPb.AddressList) error {
-	for _, address := range addresses.Address {
+func validateAddress(addresses []*userPb.Address) error {
+	for _, address := range addresses {
 		if address.GetName() == "" {
 			return errors.New("address must contain a name")
 		}
@@ -72,9 +86,10 @@ func validateAddress(addresses *userPb.AddressList) error {
 			return errors.New("address must contain a zip code")
 		}
 
-		if !address.GetDefault() {
+		if !address.GetIsDefault() {
 			return errors.New("address must contain a default")
 		}
 	}
+
 	return nil
 }

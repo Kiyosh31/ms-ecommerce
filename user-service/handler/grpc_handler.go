@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
@@ -31,25 +30,26 @@ func (s *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.Crea
 
 	userDto, err := mapUserTypeFromPb(in.GetUser())
 	if err != nil {
+		log.Printf("Parada 1: %v", err)
 		return &userPb.Response{}, err
 	}
 
-	foundedUser, err := s.service.UserStore.GetOneByEmail(ctx, in.GetUser().GetEmail())
-	if err != nil {
-		return &userPb.Response{}, err
-	}
-	if foundedUser.Email != "" {
-		return &userPb.Response{}, fmt.Errorf("user already exists")
-	}
-	log.Println(foundedUser)
+	// foundedUser, err := s.service.UserStore.GetOneByEmail(ctx, in.GetUser().GetEmail())
+	// if err == nil && &foundedUser != nil {
+	// 	return nil, fmt.Errorf("user already exists")
+	// }
 
 	createdUser, err := s.service.UserStore.CreateOne(ctx, userDto)
+	log.Printf("Parada 2: %v", createdUser)
 	if err != nil {
+		log.Printf("Parada 3: %v", err)
 		return &userPb.Response{}, err
 	}
 
 	res, err := mapResponseFromType("User created successfully", createdUser.InsertedID, userDto)
+	log.Printf("Parada 4: %v", &res)
 	if err != nil {
+		log.Printf("Parada 5: %v", err)
 		return &userPb.Response{}, err
 	}
 

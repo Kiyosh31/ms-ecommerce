@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"fmt"
+
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
 	"github.com/Kiyosh31/ms-ecommerce/user-service/types"
@@ -23,54 +26,73 @@ func mapUserTypeFromPb(in *userPb.User) (types.UserSchema, error) {
 	if err != nil {
 		return types.UserSchema{}, err
 	}
-	in.Password = hashedPassword
 
 	return types.UserSchema{
-		Name:     in.GetName(),
-		LastName: in.GetLastName(),
-		Birth:    in.GetBirth(),
-		Email:    in.GetEmail(),
-		Password: in.GetPassword(),
-		Card:     cards,
-		Address:  addresses,
+		FirstName: in.GetFirstName(),
+		LastName:  in.GetLastName(),
+		BirthDate: in.GetBirthDate(),
+		Email:     in.GetEmail(),
+		Password:  hashedPassword,
+		Cards:     cards,
+		Addresses: addresses,
 	}, nil
 }
 
-func mapCardTypeFromPb(in *userPb.CardList) ([]types.Card, error) {
+func mapCardTypeFromPb(in []*userPb.Card) ([]types.Card, error) {
 	var cards []types.Card
 
-	for _, card := range in.GetCards() {
-		mongoId, err := database.GetMongoId(card.GetId())
-		if err != nil {
-			return []types.Card{}, err
+	var mongoId primitive.ObjectID
+	var err error
+
+	for _, card := range in {
+		if card.GetId() != "" {
+			mongoId, err = database.GetMongoId(card.GetId())
+			if err != nil {
+				return []types.Card{}, err
+			}
+		} else {
+			mongoId = primitive.NewObjectID()
 		}
 
 		cards = append(cards, types.Card{
-			ID:         mongoId,
-			Number:     card.GetNumber(),
-			Cvv:        int64(card.GetCvv()),
-			Expiration: card.GetExpiration(),
-			Default:    card.GetDefault(),
+			ID:             mongoId,
+			Number:         card.GetNumber(),
+			CardHolderName: card.GetCardHolderName(),
+			CardType:       card.GetCardType(),
+			Cvv:            card.GetCvv(),
+			Expiration:     card.GetExpiration(),
+			IsDefault:      card.GetIsDefault(),
 		})
 	}
 
 	return cards, nil
 }
 
-func mapAdressTypeFromPb(in *userPb.AddressList) ([]types.Address, error) {
+func mapAdressTypeFromPb(in []*userPb.Address) ([]types.Address, error) {
 	var addresses []types.Address
 
-	for _, address := range in.GetAddress() {
-		mongoId, err := database.GetMongoId(address.GetId())
-		if err != nil {
-			return []types.Address{}, err
+	var mongoId primitive.ObjectID
+	var err error
+
+	for _, address := range in {
+		if address.GetId() != "" {
+			mongoId, err = database.GetMongoId(address.GetId())
+			if err != nil {
+				return []types.Address{}, err
+			}
+		} else {
+			mongoId = primitive.NewObjectID()
 		}
 
 		addresses = append(addresses, types.Address{
-			ID:      mongoId,
-			Name:    address.GetName(),
-			ZipCode: address.GetZipCode(),
-			Default: address.GetDefault(),
+			ID:        mongoId,
+			Name:      address.GetName(),
+			Street:    address.GetCity(),
+			City:      address.GetCity(),
+			State:     address.GetState(),
+			Country:   address.GetCountry(),
+			ZipCode:   address.GetZipCode(),
+			IsDefault: address.GetIsDefault(),
 		})
 	}
 
@@ -78,26 +100,22 @@ func mapAdressTypeFromPb(in *userPb.AddressList) ([]types.Address, error) {
 }
 
 func mapResponseFromType(message string, id interface{}, in types.UserSchema) (userPb.Response, error) {
-	userId, _ := utils.ParseInterfaceToString(id)
-	// if err != nil {
-	// 	return userPb.Response{}, err
-	// }
+	userId, ok := id.(primitive.ObjectID)
+	if !ok {
+		return userPb.Response{}, fmt.Errorf("failed to parse _id to string")
+	}
 
 	return userPb.Response{
 		Message: message,
 		User: &userPb.User{
-			Id:       userId,
-			Name:     in.Name,
-			LastName: in.LastName,
-			Birth:    in.Birth,
-			Cards: &userPb.CardList{
-				Cards: mapCardPbToType(in.Card),
-			},
-			Addresses: &userPb.AddressList{
-				Address: mapAddressPbToType(in.Address),
-			},
-			Email:    in.Email,
-			Password: in.Password,
+			Id:        userId.Hex(),
+			FirstName: in.FirstName,
+			LastName:  in.LastName,
+			BirthDate: in.BirthDate,
+			Cards:     mapCardPbToType(in.Cards),
+			Addresses: mapAddressPbToType(in.Addresses),
+			Email:     in.Email,
+			Password:  in.Password,
 		},
 	}, nil
 }
@@ -111,7 +129,7 @@ func mapCardPbToType(in []types.Card) []*userPb.Card {
 			Number:     card.Number,
 			Cvv:        int32(card.Cvv),
 			Expiration: card.Expiration,
-			Default:    card.Default,
+			IsDefault:  card.IsDefault,
 		})
 	}
 
@@ -123,10 +141,10 @@ func mapAddressPbToType(in []types.Address) []*userPb.Address {
 
 	for _, address := range in {
 		addresses = append(addresses, &userPb.Address{
-			Id:      address.ID.Hex(),
-			Name:    address.Name,
-			ZipCode: address.ZipCode,
-			Default: address.Default,
+			Id:        address.ID.Hex(),
+			Name:      address.Name,
+			ZipCode:   address.ZipCode,
+			IsDefault: address.IsDefault,
 		})
 	}
 

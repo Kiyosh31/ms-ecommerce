@@ -14,35 +14,33 @@ service UserService {
 message Address {
   string id = 1;
   string name = 2;
-  int64 zipCode = 3;
-  bool default = 4;
+  string street = 3;
+  string city = 4;
+  string state = 5;
+  string country = 6;
+  int64 zipCode = 7;
+  bool isDefault = 8;
 }
 
 message Card {
   string id = 1;
-  int64 number = 2;
-  int32 cvv= 3;
+  string number = 2;
+  string cardHolderName = 3;
   string expiration = 4;
-  bool default = 5;
-}
-
-message CardList {
-  repeated Card cards = 1;
-}
-
-message AddressList {
-  repeated Address address = 1;
+  int32 cvv = 5;
+  string cardType = 6;
+  bool isDefault = 7;
 }
 
 message User {
   string id = 1;
-  string name = 2;
+  string firstName = 2;
   string lastName = 3;
-  string birth = 4;
-  optional CardList cards = 5;
-  optional AddressList addresses = 6;
-  string email = 7;
-  string password = 8;
+  string birthDate = 4;
+  string email = 5;
+  string password = 6;
+  repeated Card cards = 7;
+  repeated Address addresses = 8;
 }
 
 message CreateUserRequest {
