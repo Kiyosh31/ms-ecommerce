@@ -18,7 +18,8 @@ type UserStore struct {
 func NewUserStore(
 	client *mongo.Client,
 	database_name string,
-	database_collection string) *UserStore {
+	database_collection string,
+) *UserStore {
 	return &UserStore{
 		client:              client,
 		database_name:       database_name,

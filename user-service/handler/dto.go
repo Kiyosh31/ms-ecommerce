@@ -78,10 +78,10 @@ func mapAdressTypeFromPb(in *userPb.AddressList) ([]types.Address, error) {
 }
 
 func mapResponseFromType(message string, id interface{}, in types.UserSchema) (userPb.Response, error) {
-	userId, err := utils.ParseInterfaceToString(id)
-	if err != nil {
-		return userPb.Response{}, err
-	}
+	userId, _ := utils.ParseInterfaceToString(id)
+	// if err != nil {
+	// 	return userPb.Response{}, err
+	// }
 
 	return userPb.Response{
 		Message: message,

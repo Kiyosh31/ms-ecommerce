@@ -50,7 +50,7 @@ message CreateUserRequest {
 }
 
 message GetUserRequest {
-
+  string userId = 1;
 }
 
 message UpdateUserRequest {
@@ -58,7 +58,7 @@ message UpdateUserRequest {
 }
 
 message DeleteUserRequest {
-
+  string userId = 1;
 }
 
 message Response {
