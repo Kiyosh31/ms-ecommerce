@@ -1,4 +1,4 @@
-package types
+package user_types
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 

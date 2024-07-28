@@ -16,6 +16,15 @@ user:
 		$(USER_PROTO_PATH)
 	@cp $(USER_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)user-service
 
+PRODUCT_PROTO_PATH=./product-service/proto/product-service.proto
+PRODUCT_PROTO_OUT_DIR=./product-service/proto/
+
+product:
+	@protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		$(PRODUCT_PROTO_PATH)
+	@cp $(PRODUCT_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)product-service
+
 # Clean docker
 IMAGE_NAMES := gateway-api user-service
 

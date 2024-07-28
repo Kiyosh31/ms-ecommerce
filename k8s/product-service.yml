@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product
+  template:
+    metadata:
+      labels:
+        app: product
+    spec:
+      containers:
+        - name: product
+          image: product-service
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+          env:
+            - name: PRODUCT_SERVICE_GRPC_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PRODUCT_SERVICE_GRPC_ADDR
+            - name: DB_CONNECTION_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: DB_CONNECTION_LINK
+            - name: PRODUCT_SERVICE_DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PRODUCT_SERVICE_DATABASE_NAME
+            - name: PRODUCT_SERVICE_DATABASE_COLLECTION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PRODUCT_SERVICE_DATABASE_COLLECTION
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: product
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 3002
+      targetPort: 3002

@@ -3,36 +3,36 @@ package store
 import (
 	"context"
 
-	"github.com/Kiyosh31/ms-ecommerce/user-service/user_types"
+	"github.com/Kiyosh31/ms-ecommerce/product-service/product_types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type UserStore struct {
+type ProductStore struct {
 	client              *mongo.Client
 	database_name       string
 	database_collection string
 }
 
-func NewUserStore(
+func NewProductStore(
 	client *mongo.Client,
 	database_name string,
 	database_collection string,
-) *UserStore {
-	return &UserStore{
+) *ProductStore {
+	return &ProductStore{
 		client:              client,
 		database_name:       database_name,
 		database_collection: database_collection,
 	}
 }
 
-func (s *UserStore) getUserCollection() *mongo.Collection {
+func (s *ProductStore) getCollection() *mongo.Collection {
 	return s.client.Database(s.database_name).Collection(s.database_collection)
 }
 
-func (s *UserStore) CreateOne(ctx context.Context, user user_types.UserSchema) (*mongo.InsertOneResult, error) {
-	col := s.getUserCollection()
+func (s *ProductStore) CreateOne(ctx context.Context, user product_types.ProductSchema) (*mongo.InsertOneResult, error) {
+	col := s.getCollection()
 
 	res, err := col.InsertOne(ctx, user)
 	if err != nil {
@@ -42,34 +42,34 @@ func (s *UserStore) CreateOne(ctx context.Context, user user_types.UserSchema) (
 	return res, nil
 }
 
-func (s *UserStore) GetOne(ctx context.Context, id primitive.ObjectID) (user_types.UserSchema, error) {
-	col := s.getUserCollection()
+func (s *ProductStore) GetOne(ctx context.Context, id primitive.ObjectID) (product_types.ProductSchema, error) {
+	col := s.getCollection()
 	filter := bson.D{{Key: "_id", Value: id}}
 
-	var res user_types.UserSchema
+	var res product_types.ProductSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		return user_types.UserSchema{}, err
+		return product_types.ProductSchema{}, err
 	}
 
 	return res, nil
 }
 
-func (s *UserStore) GetOneByEmail(ctx context.Context, email string) (user_types.UserSchema, error) {
-	col := s.getUserCollection()
+func (s *ProductStore) GetOneByEmail(ctx context.Context, email string) (product_types.ProductSchema, error) {
+	col := s.getCollection()
 	filter := bson.D{{Key: "email", Value: email}}
 
-	var res user_types.UserSchema
+	var res product_types.ProductSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		return user_types.UserSchema{}, err
+		return product_types.ProductSchema{}, err
 	}
 
 	return res, nil
 }
 
-func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserSchema) (*mongo.UpdateResult, error) {
-	col := s.getUserCollection()
+func (s *ProductStore) UpdateOne(ctx context.Context, userToUpdate product_types.ProductSchema) (*mongo.UpdateResult, error) {
+	col := s.getCollection()
 	filter := bson.D{{Key: "_id", Value: userToUpdate.ID}}
 	update := bson.D{{Key: "$set", Value: userToUpdate}}
 
@@ -81,8 +81,8 @@ func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserS
 	return res, nil
 }
 
-func (s *UserStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
-	col := s.getUserCollection()
+func (s *ProductStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	col := s.getCollection()
 	filter := bson.D{{Key: "_id", Value: id}}
 
 	res, err := col.DeleteOne(ctx, filter)

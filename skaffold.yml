@@ -20,6 +20,14 @@ build:
         manual:
           - dest: "**/*"
             src: .
+    - image: product-service
+      context: product-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: "**/*"
+            src: .
 manifests:
   rawYaml:
     - k8s/*.yml

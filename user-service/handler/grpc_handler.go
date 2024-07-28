@@ -6,7 +6,7 @@ import (
 
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
 	"github.com/Kiyosh31/ms-ecommerce/user-service/service"
-	"github.com/Kiyosh31/ms-ecommerce/user-service/types"
+	"github.com/Kiyosh31/ms-ecommerce/user-service/user_types"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"google.golang.org/grpc"
@@ -69,7 +69,7 @@ func (s *UserServiceGrpcHandler) GetUser(ctx context.Context, in *userPb.GetUser
 		return &userPb.Response{}, err
 	}
 
-	var userDto types.UserSchema
+	var userDto user_types.UserSchema
 	res, err := mapResponseFromType("User founded successfully", foundedUser.ID, userDto)
 	if err != nil {
 		return &userPb.Response{}, err
