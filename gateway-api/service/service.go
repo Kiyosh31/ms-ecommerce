@@ -24,7 +24,7 @@ func NewGatewayHttpService(httpAddr string, userClientGrpcAddr string) *GatewayS
 }
 
 func (s *GatewayService) Run() {
-	userServiceGrpcClient, conn := runUserServiceGrpcClient(s.userClientGrpcAddr)
+	userServiceGrpcClient, conn := s.runUserServiceGrpcClient()
 	defer conn.Close()
 
 	mux := http.NewServeMux()
@@ -38,12 +38,12 @@ func (s *GatewayService) Run() {
 	}
 }
 
-func runUserServiceGrpcClient(userServiceAddr string) (userPb.UserServiceClient, *grpc.ClientConn) {
-	conn, err := grpc.NewClient(userServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func (s *GatewayService) runUserServiceGrpcClient() (userPb.UserServiceClient, *grpc.ClientConn) {
+	conn, err := grpc.NewClient(s.userClientGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 
-	log.Println("Dialing user service at: ", userServiceAddr)
+	log.Println("Dialing user service at: ", s.userClientGrpcAddr)
 	return userPb.NewUserServiceClient(conn), conn
 }

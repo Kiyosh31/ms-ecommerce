@@ -13,6 +13,6 @@ func main() {
 		log.Fatalf("Could not load env vars: %v", err)
 	}
 
-	svc := service.NewGatewayHttpService(vars.GATEWAY_API_HTTP_ADRR, vars.USER_SERVICE_GRPC_ADDR)
+	svc := service.NewGatewayHttpService(vars.GATEWAY_API_HTTP_ADRR, vars.GATEWAY_API_USER_SERVICE_GRPC_ADDR)
 	svc.Run()
 }

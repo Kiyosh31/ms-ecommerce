@@ -26,11 +26,11 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: GATEWAY_API_HTTP_ADRR
-            - name: USER_SERVICE_GRPC_ADDR
+            - name: GATEWAY_API_USER_SERVICE_GRPC_ADDR
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: USER_SERVICE_GRPC_ADDR
+                  key: GATEWAY_API_USER_SERVICE_GRPC_ADDR
 ---
 apiVersion: v1
 kind: Service
@@ -42,5 +42,6 @@ spec:
     app: gateway
   ports:
     - name: http
+      protocol: TCP
       port: 3000
       targetPort: 3000
