@@ -31,7 +31,7 @@ Have installed:
 
 3. Open terminal in root project and run
    ```console
-   make run
+   make dev
    ```
 
 # Commands (Makefile)
