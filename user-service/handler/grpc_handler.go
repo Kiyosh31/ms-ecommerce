@@ -30,7 +30,7 @@ func NewGrpcUserServiceHandler(grpcServer *grpc.Server, service service.UserServ
 	userPb.RegisterUserServiceServer(grpcServer, handler)
 }
 
-func (s *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.CreateUserRequest) (*userPb.Response, error) {
+func (h *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.CreateUserRequest) (*userPb.Response, error) {
 	log.Printf("Create user received request! %v", in)
 
 	in.GetUser().IsActive = true
@@ -39,7 +39,7 @@ func (s *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.Crea
 		return &userPb.Response{}, err
 	}
 
-	foundedUser, err := s.service.UserStore.GetOneByEmail(ctx, in.GetUser().GetEmail())
+	foundedUser, err := h.service.UserStore.GetOneByEmail(ctx, in.GetUser().GetEmail())
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			return &userPb.Response{}, err
@@ -49,7 +49,7 @@ func (s *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.Crea
 		return &userPb.Response{}, errors.New("user already exists")
 	}
 
-	createdUser, err := s.service.UserStore.CreateOne(ctx, userDto)
+	createdUser, err := h.service.UserStore.CreateOne(ctx, userDto)
 	if err != nil {
 		return &userPb.Response{}, err
 	}
@@ -62,7 +62,7 @@ func (s *UserServiceGrpcHandler) CreateUser(ctx context.Context, in *userPb.Crea
 	return &res, nil
 }
 
-func (s *UserServiceGrpcHandler) GetUser(ctx context.Context, in *userPb.GetUserRequest) (*userPb.Response, error) {
+func (h *UserServiceGrpcHandler) GetUser(ctx context.Context, in *userPb.GetUserRequest) (*userPb.Response, error) {
 	log.Printf("Get user received request! %v", in)
 
 	userID, err := database.GetMongoId(in.GetUserId())
@@ -70,7 +70,7 @@ func (s *UserServiceGrpcHandler) GetUser(ctx context.Context, in *userPb.GetUser
 		return &userPb.Response{}, err
 	}
 
-	foundedUser, err := s.service.UserStore.GetOne(ctx, userID)
+	foundedUser, err := h.service.UserStore.GetOne(ctx, userID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
@@ -86,7 +86,7 @@ func (s *UserServiceGrpcHandler) GetUser(ctx context.Context, in *userPb.GetUser
 	return &res, nil
 }
 
-func (s *UserServiceGrpcHandler) UpdateUser(ctx context.Context, in *userPb.UpdateUserRequest) (*userPb.Response, error) {
+func (h *UserServiceGrpcHandler) UpdateUser(ctx context.Context, in *userPb.UpdateUserRequest) (*userPb.Response, error) {
 	log.Printf("Update user received request! %v", in)
 
 	userID, err := database.GetMongoId(in.GetUser().GetId())
@@ -94,7 +94,7 @@ func (s *UserServiceGrpcHandler) UpdateUser(ctx context.Context, in *userPb.Upda
 		return &userPb.Response{}, err
 	}
 
-	foundedUser, err := s.service.UserStore.GetOne(ctx, userID)
+	foundedUser, err := h.service.UserStore.GetOne(ctx, userID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
@@ -110,7 +110,7 @@ func (s *UserServiceGrpcHandler) UpdateUser(ctx context.Context, in *userPb.Upda
 		return &userPb.Response{}, err
 	}
 
-	_, err = s.service.UserStore.UpdateOne(ctx, userToUpdate)
+	_, err = h.service.UserStore.UpdateOne(ctx, userToUpdate)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
@@ -126,7 +126,7 @@ func (s *UserServiceGrpcHandler) UpdateUser(ctx context.Context, in *userPb.Upda
 	return &res, nil
 }
 
-func (s *UserServiceGrpcHandler) DeleteUser(ctx context.Context, in *userPb.DeleteUserRequest) (*userPb.Response, error) {
+func (h *UserServiceGrpcHandler) DeleteUser(ctx context.Context, in *userPb.DeleteUserRequest) (*userPb.Response, error) {
 	log.Printf("Update user received request! %v", in)
 
 	userID, err := database.GetMongoId(in.GetUserId())
@@ -134,7 +134,7 @@ func (s *UserServiceGrpcHandler) DeleteUser(ctx context.Context, in *userPb.Dele
 		return &userPb.Response{}, err
 	}
 
-	foundedUser, err := s.service.UserStore.GetOne(ctx, userID)
+	foundedUser, err := h.service.UserStore.GetOne(ctx, userID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
@@ -146,7 +146,7 @@ func (s *UserServiceGrpcHandler) DeleteUser(ctx context.Context, in *userPb.Dele
 	}
 	foundedUser.IsActive = false
 
-	_, err = s.service.UserStore.UpdateOne(ctx, foundedUser)
+	_, err = h.service.UserStore.UpdateOne(ctx, foundedUser)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
@@ -162,10 +162,10 @@ func (s *UserServiceGrpcHandler) DeleteUser(ctx context.Context, in *userPb.Dele
 	return &res, nil
 }
 
-func (s *UserServiceGrpcHandler) ReactivateUser(ctx context.Context, in *userPb.ReactivarUserRequest) (*userPb.Response, error) {
+func (h *UserServiceGrpcHandler) ReactivateUser(ctx context.Context, in *userPb.ReactivarUserRequest) (*userPb.Response, error) {
 	log.Printf("reactivate user received request! %v", in)
 
-	foundedUser, err := s.service.UserStore.GetOneDeactivated(ctx, in.GetEmail())
+	foundedUser, err := h.service.UserStore.GetOneDeactivated(ctx, in.GetEmail())
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
@@ -182,7 +182,7 @@ func (s *UserServiceGrpcHandler) ReactivateUser(ctx context.Context, in *userPb.
 	}
 	foundedUser.IsActive = true
 
-	_, err = s.service.UserStore.UpdateOne(ctx, foundedUser)
+	_, err = h.service.UserStore.UpdateOne(ctx, foundedUser)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return &userPb.Response{}, errors.New(utils.NOT_FOUND)

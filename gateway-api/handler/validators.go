@@ -3,9 +3,11 @@ package handler
 import (
 	"errors"
 
+	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 )
 
+// user-service
 func validateUserPayload(payload *userPb.User) []error {
 	var errs []error
 
@@ -103,6 +105,29 @@ func validateReactivateUser(payload *userPb.ReactivarUserRequest) []error {
 
 	if payload.GetPassword() == "" {
 		errs = append(errs, errors.New("missing password"))
+	}
+
+	return errs
+}
+
+// product-service
+func validateProductPayload(payload *productPb.Product) []error {
+	var errs []error
+
+	if payload.GetSellerId() == "" {
+		errs = append(errs, errors.New("missing sellerId"))
+	}
+
+	if payload.GetName() == "" {
+		errs = append(errs, errors.New("missing name"))
+	}
+
+	if payload.GetDescription() == "" {
+		errs = append(errs, errors.New("missing description"))
+	}
+
+	if payload.GetPrice() == 0 {
+		errs = append(errs, errors.New("missing price"))
 	}
 
 	return errs
