@@ -3,7 +3,7 @@ module github.com/Kiyosh31/ms-ecommerce/user-service
 go 1.22.5
 
 require (
-	github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240728034349-237373f9d7d4
+	github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240729000833-f1617eea3ecf
 	go.mongodb.org/mongo-driver v1.16.0
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2

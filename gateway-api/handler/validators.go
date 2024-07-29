@@ -93,3 +93,17 @@ func validateAddress(addresses []*userPb.Address) error {
 
 	return nil
 }
+
+func validateReactivateUser(payload *userPb.ReactivarUserRequest) []error {
+	var errs []error
+
+	if payload.GetEmail() == "" {
+		errs = append(errs, errors.New("missing email"))
+	}
+
+	if payload.GetPassword() == "" {
+		errs = append(errs, errors.New("missing password"))
+	}
+
+	return errs
+}

@@ -8,13 +8,13 @@ dependencies:
 # Proto
 USER_PROTO_PATH=./user-service/proto/user-service.proto
 USER_PROTO_OUT_DIR=./user-service/proto/
-GATEWAY_API_OUT_DIR=./gateway-api/generated/
+GATEWAY_API_OUT_DIR=./gateway-api/generated
 
 user:
 	@protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
 		$(USER_PROTO_PATH)
-	@cp $(USER_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)user-service
+	@cp $(USER_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)/user-service
 
 PRODUCT_PROTO_PATH=./product-service/proto/product-service.proto
 PRODUCT_PROTO_OUT_DIR=./product-service/proto/
@@ -23,7 +23,7 @@ product:
 	@protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
 		$(PRODUCT_PROTO_PATH)
-	@cp $(PRODUCT_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)product-service
+	@cp $(PRODUCT_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)/product-service
 
 # Clean docker
 IMAGE_NAMES := gateway-api user-service

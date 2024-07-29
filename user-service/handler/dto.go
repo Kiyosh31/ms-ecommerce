@@ -11,34 +11,21 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce/user-service/user_types"
 )
 
-func mapUserTypeFromPb(in *userPb.User) (user_types.UserSchema, error) {
-	cards, err := mapCardTypeFromPb(in.GetCards())
-	if err != nil {
-		return user_types.UserSchema{}, err
+func createUserPbDto(in user_types.UserSchema) userPb.User {
+	return userPb.User{
+		Id:        in.ID.Hex(),
+		FirstName: in.FirstName,
+		LastName:  in.LastName,
+		BirthDate: in.BirthDate,
+		Email:     in.Email,
+		Password:  in.Password,
+		Cards:     createCardTypeDto(in.Cards),
+		Addresses: createAddressTypeDto(in.Addresses),
+		IsActive:  in.IsActive,
 	}
-
-	addresses, err := mapAdressTypeFromPb(in.GetAddresses())
-	if err != nil {
-		return user_types.UserSchema{}, err
-	}
-
-	hashedPassword, err := utils.HashPassword(in.GetPassword())
-	if err != nil {
-		return user_types.UserSchema{}, err
-	}
-
-	return user_types.UserSchema{
-		FirstName: in.GetFirstName(),
-		LastName:  in.GetLastName(),
-		BirthDate: in.GetBirthDate(),
-		Email:     in.GetEmail(),
-		Password:  hashedPassword,
-		Cards:     cards,
-		Addresses: addresses,
-	}, nil
 }
 
-func mapCardTypeFromPb(in []*userPb.Card) ([]user_types.Card, error) {
+func createCardPbDto(in []*userPb.Card) ([]user_types.Card, error) {
 	var cards []user_types.Card
 
 	var mongoId primitive.ObjectID
@@ -68,7 +55,7 @@ func mapCardTypeFromPb(in []*userPb.Card) ([]user_types.Card, error) {
 	return cards, nil
 }
 
-func mapAdressTypeFromPb(in []*userPb.Address) ([]user_types.Address, error) {
+func createAddressPbDto(in []*userPb.Address) ([]user_types.Address, error) {
 	var addresses []user_types.Address
 
 	var mongoId primitive.ObjectID
@@ -99,10 +86,17 @@ func mapAdressTypeFromPb(in []*userPb.Address) ([]user_types.Address, error) {
 	return addresses, nil
 }
 
-func mapResponseFromType(message string, id interface{}, in user_types.UserSchema) (userPb.Response, error) {
-	userId, ok := id.(primitive.ObjectID)
-	if !ok {
-		return userPb.Response{}, fmt.Errorf("failed to parse _id to string")
+func createResponsePbDto(message string, id interface{}, in user_types.UserSchema) (userPb.Response, error) {
+	var userId primitive.ObjectID
+	var ok bool
+
+	if id != nil {
+		userId, ok = id.(primitive.ObjectID)
+		if !ok {
+			return userPb.Response{}, fmt.Errorf("failed to parse _id to string")
+		}
+	} else {
+		userId = in.ID
 	}
 
 	return userPb.Response{
@@ -112,15 +106,16 @@ func mapResponseFromType(message string, id interface{}, in user_types.UserSchem
 			FirstName: in.FirstName,
 			LastName:  in.LastName,
 			BirthDate: in.BirthDate,
-			Cards:     mapCardPbToType(in.Cards),
-			Addresses: mapAddressPbToType(in.Addresses),
+			Cards:     createCardTypeDto(in.Cards),
+			Addresses: createAddressTypeDto(in.Addresses),
 			Email:     in.Email,
 			Password:  in.Password,
+			IsActive:  in.IsActive,
 		},
 	}, nil
 }
 
-func mapCardPbToType(in []user_types.Card) []*userPb.Card {
+func createCardTypeDto(in []user_types.Card) []*userPb.Card {
 	var cards []*userPb.Card
 
 	for _, card := range in {
@@ -136,7 +131,7 @@ func mapCardPbToType(in []user_types.Card) []*userPb.Card {
 	return cards
 }
 
-func mapAddressPbToType(in []user_types.Address) []*userPb.Address {
+func createAddressTypeDto(in []user_types.Address) []*userPb.Address {
 	var addresses []*userPb.Address
 
 	for _, address := range in {
@@ -149,4 +144,41 @@ func mapAddressPbToType(in []user_types.Address) []*userPb.Address {
 	}
 
 	return addresses
+}
+
+func createUserSchemaDto(in *userPb.User) (user_types.UserSchema, error) {
+	cards, err := createCardPbDto(in.GetCards())
+	if err != nil {
+		return user_types.UserSchema{}, err
+	}
+
+	addresses, err := createAddressPbDto(in.GetAddresses())
+	if err != nil {
+		return user_types.UserSchema{}, err
+	}
+
+	hashedPassword, err := utils.HashPassword(in.GetPassword())
+	if err != nil {
+		return user_types.UserSchema{}, err
+	}
+
+	var userID primitive.ObjectID
+	if in.Id != "" {
+		userID, err = database.GetMongoId(in.GetId())
+		if err != nil {
+			return user_types.UserSchema{}, err
+		}
+	}
+
+	return user_types.UserSchema{
+		ID:        userID,
+		FirstName: in.GetFirstName(),
+		LastName:  in.GetLastName(),
+		BirthDate: in.GetBirthDate(),
+		Email:     in.GetEmail(),
+		Password:  hashedPassword,
+		Cards:     cards,
+		Addresses: addresses,
+		IsActive:  in.GetIsActive(),
+	}, nil
 }

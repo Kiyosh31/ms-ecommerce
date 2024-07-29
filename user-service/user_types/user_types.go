@@ -11,6 +11,7 @@ type UserSchema struct {
 	Password  string             `bson:"password" binding:"required"`
 	Cards     []Card             `bson:"cards"`
 	Addresses []Address          `bson:"addresses"`
+	IsActive  bool               `bson:"isActive"`
 }
 
 type Card struct {

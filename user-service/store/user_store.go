@@ -44,7 +44,26 @@ func (s *UserStore) CreateOne(ctx context.Context, user user_types.UserSchema) (
 
 func (s *UserStore) GetOne(ctx context.Context, id primitive.ObjectID) (user_types.UserSchema, error) {
 	col := s.getUserCollection()
-	filter := bson.D{{Key: "_id", Value: id}}
+	filter := bson.D{
+		{Key: "_id", Value: id},
+		{Key: "isActive", Value: true},
+	}
+
+	var res user_types.UserSchema
+	err := col.FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		return user_types.UserSchema{}, err
+	}
+
+	return res, nil
+}
+
+func (s *UserStore) GetOneDeactivated(ctx context.Context, email string) (user_types.UserSchema, error) {
+	col := s.getUserCollection()
+	filter := bson.D{
+		{Key: "email", Value: email},
+		{Key: "isActive", Value: false},
+	}
 
 	var res user_types.UserSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
@@ -57,7 +76,10 @@ func (s *UserStore) GetOne(ctx context.Context, id primitive.ObjectID) (user_typ
 
 func (s *UserStore) GetOneByEmail(ctx context.Context, email string) (user_types.UserSchema, error) {
 	col := s.getUserCollection()
-	filter := bson.D{{Key: "email", Value: email}}
+	filter := bson.D{
+		{Key: "email", Value: email},
+		{Key: "isActive", Value: true},
+	}
 
 	var res user_types.UserSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
@@ -83,7 +105,10 @@ func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserS
 
 func (s *UserStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
 	col := s.getUserCollection()
-	filter := bson.D{{Key: "_id", Value: id}}
+	filter := bson.D{
+		{Key: "_id", Value: id},
+		{Key: "isActive", Value: true},
+	}
 
 	res, err := col.DeleteOne(ctx, filter)
 	if err != nil {

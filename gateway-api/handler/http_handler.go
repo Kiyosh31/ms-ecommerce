@@ -25,6 +25,7 @@ func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/user/{userId}", h.getUser)
 	mux.HandleFunc("PUT /api/v1/user/{userId}", h.updateUser)
 	mux.HandleFunc("DELETE /api/v1/user/{userId}", h.deleteUser)
+	mux.HandleFunc("POST /api/v1/user/reactivate", h.reactivateUser)
 
 	// Product endpoints
 	mux.HandleFunc("POST /api/v1/product", h.createProduct)
