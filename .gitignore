@@ -7,3 +7,5 @@ k8s/secrets.yml
 # build
 gateway-api/gateway-api
 user-service/user-service
+cart-service/cart-service
+product-service/product-service
