@@ -2,8 +2,10 @@ dev:
 	skaffold dev
 
 dependencies:
-	cd gateway-api && go get -u
-	cd user-service && go get -u
+	cd cart-service && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
+	cd gateway-api && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
+	cd product-service && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
+	cd user-service && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
 
 # Proto
 USER_PROTO_PATH=./user-service/proto/user-service.proto
