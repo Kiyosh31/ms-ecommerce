@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 
+	cartPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/cart-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 )
@@ -128,6 +129,29 @@ func validateProductPayload(payload *productPb.Product) []error {
 
 	if payload.GetPrice() == 0 {
 		errs = append(errs, errors.New("missing price"))
+	}
+
+	return errs
+}
+
+// cart-service
+func validateCartPayload(payload *cartPb.Cart) []error {
+	var errs []error
+
+	if payload.GetId() == "" {
+		errs = append(errs, errors.New("missing id"))
+	}
+
+	if payload.GetUserId() == "" {
+		errs = append(errs, errors.New("missing userId"))
+	}
+
+	if payload.GetId() == "" {
+		errs = append(errs, errors.New("missing id"))
+	}
+
+	if payload.GetTotal() == 0 {
+		errs = append(errs, errors.New("missing total"))
 	}
 
 	return errs

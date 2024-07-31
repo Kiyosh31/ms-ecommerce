@@ -28,6 +28,14 @@ build:
         manual:
           - dest: "**/*"
             src: .
+    - image: cart-service
+      context: cart-service
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - dest: "**/*"
+            src: .
 manifests:
   rawYaml:
     - k8s/*.yml

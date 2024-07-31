@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package="github.com/Kiyosh31/ms-ecommerce/cart-service/cartPb";
+
+package cartPb;
+
+service CartService {
+  rpc CreateCart(CreateCartRequest) returns (SingleCartResponse);
+  rpc GetCart(GetCartRequest) returns (SingleCartResponse);
+  rpc GetCarts(GetCartsRequest) returns (MultipleCartResponse);
+}
+
+message Cart {
+  string id = 1;
+  string userId = 2;
+  double total = 3;
+}
+
+message SingleCartResponse {
+  string message = 1;
+  Cart cart = 2;
+}
+
+message MultipleCartResponse {
+  string message = 1;
+  repeated Cart cart = 2;
+}
+
+message CreateCartRequest {
+  Cart cart = 1;
+}
+
+message GetCartRequest {
+  string id = 1;
+}
+
+message GetCartsRequest {
+  string userId = 2;
+}

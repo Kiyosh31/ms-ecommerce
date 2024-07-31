@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 
+	cartPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/cart-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 )
@@ -10,12 +11,19 @@ import (
 type GatewayApiHandler struct {
 	userServiceClient    userPb.UserServiceClient
 	productServiceClient productPb.ProductServiceClient
+	cartProductClient    cartPb.CartServiceClient
 }
 
-func NewHandler(userServiceClient userPb.UserServiceClient, productServiceClient productPb.ProductServiceClient) *GatewayApiHandler {
+func NewHandler(
+	userServiceClient userPb.UserServiceClient,
+	productServiceClient productPb.ProductServiceClient,
+	cartProductClient cartPb.CartServiceClient,
+
+) *GatewayApiHandler {
 	return &GatewayApiHandler{
 		userServiceClient:    userServiceClient,
 		productServiceClient: productServiceClient,
+		cartProductClient:    cartProductClient,
 	}
 }
 
@@ -33,4 +41,7 @@ func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/v1/product/all", h.getAllProducts)
 	mux.HandleFunc("PUT /api/v1/product/{productId}", h.updateProduct)
 	mux.HandleFunc("DELETE /api/v1/product/{productId}", h.deleteProduct)
+
+	// Cart endpoints
+	mux.HandleFunc("POST /api/v1/cart", h.createCart)
 }

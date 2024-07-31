@@ -1,57 +1,57 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway-depl
+  name: cart-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gateway
+      app: cart
   template:
     metadata:
       labels:
-        app: gateway
+        app: cart
     spec:
       containers:
-        - name: gateway
-          image: gateway-api
+        - name: cart
+          image: cart-service
           imagePullPolicy: Never
           resources:
             limits:
               memory: 512Mi
               cpu: "1"
           env:
-            - name: GATEWAY_API_HTTP_ADRR
+            - name: CART_SERVICE_GRPC_ADDR
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: GATEWAY_API_HTTP_ADRR
-            - name: GATEWAY_API_USER_SERVICE_GRPC_ADDR
+                  key: CART_SERVICE_GRPC_ADDR
+            - name: DB_CONNECTION_LINK
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: GATEWAY_API_USER_SERVICE_GRPC_ADDR
-            - name: GATEWAY_API_PRODUCT_SERVICE_GRPC_ADDR
+                  key: DB_CONNECTION_LINK
+            - name: CART_SERVICE_DATABASE_NAME
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: GATEWAY_API_PRODUCT_SERVICE_GRPC_ADDR
-            - name: GATEWAY_API_CART_SERVICE_GRPC_ADDR
+                  key: CART_SERVICE_DATABASE_NAME
+            - name: CART_SERVICE_DATABASE_COLLECTION
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: GATEWAY_API_CART_SERVICE_GRPC_ADDR
+                  key: CART_SERVICE_DATABASE_COLLECTION
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway-srv
+  name: cart-srv
 spec:
   type: ClusterIP
   selector:
-    app: gateway
+    app: cart
   ports:
-    - name: http
+    - name: grpc
       protocol: TCP
-      port: 3000
-      targetPort: 3000
+      port: 3003
+      targetPort: 3003
