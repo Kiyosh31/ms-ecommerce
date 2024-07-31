@@ -41,11 +41,11 @@ cart:
 
 
 # Clean docker
-IMAGE_NAMES := gateway-api user-service
+IMAGE_NAMES := gateway-api user-service product-service cart-service
 
 clean-images:
 	@for image in $(IMAGE_NAMES); do \
-		echo "Deleting all Docker images with name $$image...\n"; \
+		echo "\nDeleting all Docker images with name $$image..."; \
 		docker images | grep "$$image" | awk '{print $$3}' | xargs -r docker rmi -f || true; \
 	done
 	@echo "Docker images deleted."

@@ -146,5 +146,9 @@ func validateCartPayload(payload *cartPb.Cart) []error {
 		errs = append(errs, errors.New("missing total"))
 	}
 
+	if payload.GetProducts() == nil {
+		errs = append(errs, errors.New("missing products"))
+	}
+
 	return errs
 }
