@@ -40,9 +40,9 @@ func (s *CartStore) CreateOne(ctx context.Context, cart cart_types.CartSchema) (
 	return res, nil
 }
 
-func (s *CartStore) GetOne(ctx context.Context, id primitive.ObjectID) (cart_types.CartSchema, error) {
+func (s *CartStore) GetOne(ctx context.Context, cartId primitive.ObjectID) (cart_types.CartSchema, error) {
 	col := s.getCartCollection()
-	filter := bson.D{{Key: "_id", Value: id}}
+	filter := bson.D{{Key: "_id", Value: cartId}}
 
 	var res cart_types.CartSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
@@ -51,4 +51,30 @@ func (s *CartStore) GetOne(ctx context.Context, id primitive.ObjectID) (cart_typ
 	}
 
 	return res, nil
+}
+
+func (s *CartStore) GetAll(ctx context.Context, userId primitive.ObjectID) ([]cart_types.CartSchema, error) {
+	col := s.getCartCollection()
+
+	// Find all documents
+	cursor, err := col.Find(ctx, bson.D{})
+	if err != nil {
+		return []cart_types.CartSchema{}, err
+	}
+	defer cursor.Close(ctx)
+
+	// Iterate over the cursor and decode results
+	var results []cart_types.CartSchema
+	for cursor.Next(ctx) {
+		var result cart_types.CartSchema
+		if err := cursor.Decode(&result); err != nil {
+			return []cart_types.CartSchema{}, err
+		}
+		results = append(results, result)
+	}
+	if err := cursor.Err(); err != nil {
+		return []cart_types.CartSchema{}, err
+	}
+
+	return results, nil
 }

@@ -1,6 +1,6 @@
 # Overview
 
-e-commerce microservices made in `go/golang`, `docker`, `kubernetes`, `gRPC`, `RabbitMQ`, `MongoDB`.
+e-commerce microservices made in `go/golang`, `docker`, `kubernetes`, `gRPC`, `RabbitMQ`, `MongoDB`, `MongoDB Atlas`.
 
 ### Common package
 

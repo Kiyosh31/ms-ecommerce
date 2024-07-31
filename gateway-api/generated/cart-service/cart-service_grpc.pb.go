@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CartServiceClient interface {
 	CreateCart(ctx context.Context, in *CreateCartRequest, opts ...grpc.CallOption) (*SingleCartResponse, error)
 	GetCart(ctx context.Context, in *GetCartRequest, opts ...grpc.CallOption) (*SingleCartResponse, error)
-	GetCarts(ctx context.Context, in *GetCartsRequest, opts ...grpc.CallOption) (*MultipleCartResponse, error)
+	GetAllCarts(ctx context.Context, in *GetCartsRequest, opts ...grpc.CallOption) (*MultipleCartResponse, error)
 }
 
 type cartServiceClient struct {
@@ -53,9 +53,9 @@ func (c *cartServiceClient) GetCart(ctx context.Context, in *GetCartRequest, opt
 	return out, nil
 }
 
-func (c *cartServiceClient) GetCarts(ctx context.Context, in *GetCartsRequest, opts ...grpc.CallOption) (*MultipleCartResponse, error) {
+func (c *cartServiceClient) GetAllCarts(ctx context.Context, in *GetCartsRequest, opts ...grpc.CallOption) (*MultipleCartResponse, error) {
 	out := new(MultipleCartResponse)
-	err := c.cc.Invoke(ctx, "/cartPb.CartService/GetCarts", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/cartPb.CartService/GetAllCarts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (c *cartServiceClient) GetCarts(ctx context.Context, in *GetCartsRequest, o
 type CartServiceServer interface {
 	CreateCart(context.Context, *CreateCartRequest) (*SingleCartResponse, error)
 	GetCart(context.Context, *GetCartRequest) (*SingleCartResponse, error)
-	GetCarts(context.Context, *GetCartsRequest) (*MultipleCartResponse, error)
+	GetAllCarts(context.Context, *GetCartsRequest) (*MultipleCartResponse, error)
 	mustEmbedUnimplementedCartServiceServer()
 }
 
@@ -82,8 +82,8 @@ func (UnimplementedCartServiceServer) CreateCart(context.Context, *CreateCartReq
 func (UnimplementedCartServiceServer) GetCart(context.Context, *GetCartRequest) (*SingleCartResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCart not implemented")
 }
-func (UnimplementedCartServiceServer) GetCarts(context.Context, *GetCartsRequest) (*MultipleCartResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetCarts not implemented")
+func (UnimplementedCartServiceServer) GetAllCarts(context.Context, *GetCartsRequest) (*MultipleCartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllCarts not implemented")
 }
 func (UnimplementedCartServiceServer) mustEmbedUnimplementedCartServiceServer() {}
 
@@ -134,20 +134,20 @@ func _CartService_GetCart_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CartService_GetCarts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CartService_GetAllCarts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetCartsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CartServiceServer).GetCarts(ctx, in)
+		return srv.(CartServiceServer).GetAllCarts(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/cartPb.CartService/GetCarts",
+		FullMethod: "/cartPb.CartService/GetAllCarts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CartServiceServer).GetCarts(ctx, req.(*GetCartsRequest))
+		return srv.(CartServiceServer).GetAllCarts(ctx, req.(*GetCartsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,8 +168,8 @@ var CartService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CartService_GetCart_Handler,
 		},
 		{
-			MethodName: "GetCarts",
-			Handler:    _CartService_GetCarts_Handler,
+			MethodName: "GetAllCarts",
+			Handler:    _CartService_GetAllCarts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

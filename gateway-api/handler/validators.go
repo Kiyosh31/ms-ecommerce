@@ -138,16 +138,8 @@ func validateProductPayload(payload *productPb.Product) []error {
 func validateCartPayload(payload *cartPb.Cart) []error {
 	var errs []error
 
-	if payload.GetId() == "" {
-		errs = append(errs, errors.New("missing id"))
-	}
-
 	if payload.GetUserId() == "" {
 		errs = append(errs, errors.New("missing userId"))
-	}
-
-	if payload.GetId() == "" {
-		errs = append(errs, errors.New("missing id"))
 	}
 
 	if payload.GetTotal() == 0 {

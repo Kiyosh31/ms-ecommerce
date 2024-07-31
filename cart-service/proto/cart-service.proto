@@ -7,7 +7,7 @@ package cartPb;
 service CartService {
   rpc CreateCart(CreateCartRequest) returns (SingleCartResponse);
   rpc GetCart(GetCartRequest) returns (SingleCartResponse);
-  rpc GetCarts(GetCartsRequest) returns (MultipleCartResponse);
+  rpc GetAllCarts(GetCartsRequest) returns (MultipleCartResponse);
 }
 
 message Cart {
@@ -31,7 +31,8 @@ message CreateCartRequest {
 }
 
 message GetCartRequest {
-  string id = 1;
+  string userId = 1;
+  string cartId = 2;
 }
 
 message GetCartsRequest {

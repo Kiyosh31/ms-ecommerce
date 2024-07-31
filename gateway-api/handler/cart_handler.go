@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
@@ -9,7 +8,6 @@ import (
 )
 
 func (h *GatewayApiHandler) createCart(w http.ResponseWriter, r *http.Request) {
-	log.Println("llegue aqui")
 	var payload cartPb.Cart
 
 	if err := utils.ReadJSON(r, &payload); err != nil {
@@ -31,4 +29,34 @@ func (h *GatewayApiHandler) createCart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteResponse(w, http.StatusCreated, res)
+}
+
+func (h *GatewayApiHandler) getCart(w http.ResponseWriter, r *http.Request) {
+	userId := r.PathValue("userId")
+	cartId := r.PathValue("cartId")
+
+	res, err := h.cartProductClient.GetCart(r.Context(), &cartPb.GetCartRequest{
+		UserId: userId,
+		CartId: cartId,
+	})
+	if err != nil {
+		utils.WriteRpcError(err, w)
+		return
+	}
+
+	utils.WriteResponse(w, http.StatusOK, res)
+}
+
+func (h *GatewayApiHandler) getAllCarts(w http.ResponseWriter, r *http.Request) {
+	userId := r.PathValue("userId")
+
+	res, err := h.cartProductClient.GetAllCarts(r.Context(), &cartPb.GetCartsRequest{
+		UserId: userId,
+	})
+	if err != nil {
+		utils.WriteRpcError(err, w)
+		return
+	}
+
+	utils.WriteResponse(w, http.StatusOK, res)
 }

@@ -44,4 +44,7 @@ func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
 
 	// Cart endpoints
 	mux.HandleFunc("POST /api/v1/cart", h.createCart)
+	mux.HandleFunc("GET /api/v1/cart/{userId}/{cartId}", h.getCart)
+	mux.HandleFunc("GET /api/v1/cart/all/{userId}", h.getAllCarts)
+
 }
