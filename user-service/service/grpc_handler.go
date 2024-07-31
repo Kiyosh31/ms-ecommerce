@@ -14,19 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// type UserServiceGrpcHandler struct {
-// 	userPb.UnimplementedUserServiceServer
-// 	service service.UserService
-// }
-
-// func NewGrpcUserServiceHandler(grpcServer *grpc.Server, service service.UserService) {
-// 	handler := &UserServiceGrpcHandler{
-// 		service: service,
-// 	}
-
-// 	userPb.RegisterUserServiceServer(grpcServer, handler)
-// }
-
 func (s *UserService) CreateUser(ctx context.Context, in *userPb.CreateUserRequest) (*userPb.Response, error) {
 	log.Printf("Create user received request! %v", in)
 

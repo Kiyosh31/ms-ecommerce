@@ -6,7 +6,7 @@ import (
 
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/config"
-	"github.com/Kiyosh31/ms-ecommerce/product-service/handler"
+	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/service"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/store"
 	"google.golang.org/grpc"
@@ -34,7 +34,7 @@ func main() {
 
 	productStore := store.NewProductStore(mongoClient, vars.PRODUCT_SERVICE_DATABASE_NAME, vars.PRODUCT_SERVICE_DATABASE_COLLECTION)
 	svc := service.NewProductService(vars.PRODUCT_SERVICE_GRPC_ADDR, *productStore)
-	handler.NewGrpcProductServiceHandler(grpServer, *svc)
+	productPb.RegisterProductServiceServer(grpServer, svc)
 
 	log.Println("gRPC server started in port: ", vars.PRODUCT_SERVICE_GRPC_ADDR)
 	if err := grpServer.Serve(conn); err != nil {

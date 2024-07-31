@@ -1,4 +1,4 @@
-package handler
+package service
 
 import (
 	"context"
@@ -9,26 +9,11 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
-	"github.com/Kiyosh31/ms-ecommerce/product-service/service"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"google.golang.org/grpc"
 )
 
-type ProductServiceGrpcHandler struct {
-	productPb.UnimplementedProductServiceServer
-	service service.ProductService
-}
-
-func NewGrpcProductServiceHandler(grpcServer *grpc.Server, service service.ProductService) {
-	handler := &ProductServiceGrpcHandler{
-		service: service,
-	}
-
-	productPb.RegisterProductServiceServer(grpcServer, handler)
-}
-
-func (h *ProductServiceGrpcHandler) CreateProduct(ctx context.Context, in *productPb.CreateProductRequest) (*productPb.ProductResponse, error) {
+func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.CreateProductRequest) (*productPb.ProductResponse, error) {
 	log.Printf("Create product received request! %v", in)
 
 	productDto, err := createProductSchemaDto(in.GetProduct())
@@ -41,14 +26,14 @@ func (h *ProductServiceGrpcHandler) CreateProduct(ctx context.Context, in *produ
 		return &productPb.ProductResponse{}, err
 	}
 
-	_, err = h.service.ProductStore.GetOne(ctx, productId)
+	_, err = s.ProductStore.GetOne(ctx, productId)
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
 			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
 		}
 	}
 
-	createdProduct, err := h.service.ProductStore.CreateOne(ctx, productDto)
+	createdProduct, err := s.ProductStore.CreateOne(ctx, productDto)
 	if err != nil {
 		return &productPb.ProductResponse{}, err
 	}

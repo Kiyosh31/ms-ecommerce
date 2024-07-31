@@ -35,7 +35,6 @@ func main() {
 	userStore := store.NewUserStore(mongoClient, vars.USER_SERVICE_DATABASE_NAME, vars.USER_SERVICE_DATABASE_COLLECTION)
 	svc := service.NewUserService(vars.USER_SERVICE_GRPC_ADDR, *userStore)
 	userPb.RegisterUserServiceServer(grpServer, svc)
-	// handler.NewGrpcUserServiceHandler(grpServer, *svc)
 
 	log.Println("gRPC server started in port: ", vars.USER_SERVICE_GRPC_ADDR)
 	if err := grpServer.Serve(conn); err != nil {

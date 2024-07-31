@@ -1,4 +1,4 @@
-package handler
+package service
 
 import (
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
