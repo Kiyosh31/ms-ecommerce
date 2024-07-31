@@ -11,7 +11,6 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
 	"github.com/Kiyosh31/ms-ecommerce/user-service/user_types"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *UserService) CreateUser(ctx context.Context, in *userPb.CreateUserRequest) (*userPb.Response, error) {
@@ -25,9 +24,7 @@ func (s *UserService) CreateUser(ctx context.Context, in *userPb.CreateUserReque
 
 	foundedUser, err := s.UserStore.GetOneByEmail(ctx, in.GetUser().GetEmail())
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &userPb.Response{}, err
-		}
+		return &userPb.Response{}, err
 	}
 	if !reflect.DeepEqual(foundedUser, user_types.UserSchema{}) {
 		return &userPb.Response{}, errors.New("user already exists")
@@ -56,9 +53,6 @@ func (s *UserService) GetUser(ctx context.Context, in *userPb.GetUserRequest) (*
 
 	foundedUser, err := s.UserStore.GetOne(ctx, userID)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 
@@ -80,9 +74,6 @@ func (s *UserService) UpdateUser(ctx context.Context, in *userPb.UpdateUserReque
 
 	foundedUser, err := s.UserStore.GetOne(ctx, userID)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 	if reflect.DeepEqual(foundedUser, user_types.UserSchema{}) {
@@ -96,9 +87,6 @@ func (s *UserService) UpdateUser(ctx context.Context, in *userPb.UpdateUserReque
 
 	_, err = s.UserStore.UpdateOne(ctx, userToUpdate)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 
@@ -120,9 +108,6 @@ func (s *UserService) DeleteUser(ctx context.Context, in *userPb.DeleteUserReque
 
 	foundedUser, err := s.UserStore.GetOne(ctx, userID)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 	if reflect.DeepEqual(foundedUser, user_types.UserSchema{}) {
@@ -132,9 +117,6 @@ func (s *UserService) DeleteUser(ctx context.Context, in *userPb.DeleteUserReque
 
 	_, err = s.UserStore.UpdateOne(ctx, foundedUser)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 
@@ -151,9 +133,6 @@ func (s *UserService) ReactivateUser(ctx context.Context, in *userPb.ReactivarUs
 
 	foundedUser, err := s.UserStore.GetOneDeactivated(ctx, in.GetEmail())
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 	if reflect.DeepEqual(foundedUser, user_types.UserSchema{}) {
@@ -168,9 +147,6 @@ func (s *UserService) ReactivateUser(ctx context.Context, in *userPb.ReactivarUs
 
 	_, err = s.UserStore.UpdateOne(ctx, foundedUser)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &userPb.Response{}, errors.New(utils.NOT_FOUND)
-		}
 		return &userPb.Response{}, err
 	}
 

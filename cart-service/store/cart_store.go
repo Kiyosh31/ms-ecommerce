@@ -34,6 +34,10 @@ func (s *CartStore) CreateOne(ctx context.Context, cart cart_types.CartSchema) (
 
 	res, err := col.InsertOne(ctx, cart)
 	if err != nil {
+		var err error
+		if err != mongo.ErrNoDocuments {
+			return &mongo.InsertOneResult{}, err
+		}
 		return &mongo.InsertOneResult{}, err
 	}
 
@@ -47,6 +51,9 @@ func (s *CartStore) GetOne(ctx context.Context, cartId primitive.ObjectID) (cart
 	var res cart_types.CartSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return cart_types.CartSchema{}, err
+		}
 		return cart_types.CartSchema{}, err
 	}
 
@@ -59,6 +66,9 @@ func (s *CartStore) GetAll(ctx context.Context, userId primitive.ObjectID) ([]ca
 	// Find all documents
 	cursor, err := col.Find(ctx, bson.D{})
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return []cart_types.CartSchema{}, err
+		}
 		return []cart_types.CartSchema{}, err
 	}
 	defer cursor.Close(ctx)
@@ -68,6 +78,9 @@ func (s *CartStore) GetAll(ctx context.Context, userId primitive.ObjectID) ([]ca
 	for cursor.Next(ctx) {
 		var result cart_types.CartSchema
 		if err := cursor.Decode(&result); err != nil {
+			if err != mongo.ErrNoDocuments {
+				return []cart_types.CartSchema{}, err
+			}
 			return []cart_types.CartSchema{}, err
 		}
 		results = append(results, result)

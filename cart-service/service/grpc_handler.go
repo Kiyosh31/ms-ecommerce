@@ -9,7 +9,6 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
 	"github.com/Kiyosh31/ms-ecommerce/cart-service/cart_types"
 	cartPb "github.com/Kiyosh31/ms-ecommerce/cart-service/proto"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *CartService) CreateCart(ctx context.Context, in *cartPb.CreateCartRequest) (*cartPb.SingleCartResponse, error) {
@@ -48,9 +47,6 @@ func (s *CartService) GetCart(ctx context.Context, in *cartPb.GetCartRequest) (*
 
 	foundedCart, err := s.CartStore.GetOne(ctx, cartId)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &cartPb.SingleCartResponse{}, err
-		}
 		return &cartPb.SingleCartResponse{}, err
 	}
 	if reflect.DeepEqual(foundedCart, cart_types.CartSchema{}) {
@@ -78,9 +74,6 @@ func (s *CartService) GetAllCarts(ctx context.Context, in *cartPb.GetCartsReques
 
 	foundedCarts, err := s.CartStore.GetAll(ctx, userId)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &cartPb.MultipleCartResponse{}, err
-		}
 		return &cartPb.MultipleCartResponse{}, err
 	}
 

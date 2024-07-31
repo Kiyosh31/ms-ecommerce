@@ -12,7 +12,6 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce/product-service/product_types"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.CreateProductRequest) (*productPb.ProductResponse, error) {
@@ -30,9 +29,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.Create
 
 	_, err = s.ProductStore.GetOne(ctx, productId)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
+		return &productPb.ProductResponse{}, err
 	}
 
 	createdProduct, err := s.ProductStore.CreateOne(ctx, productDto)
@@ -62,9 +59,10 @@ func (s *ProductService) GetProduct(ctx context.Context, in *productPb.GetProduc
 
 	productFounded, err := s.ProductStore.GetOne(ctx, productId)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
+		return &productPb.ProductResponse{}, err
+	}
+	if reflect.DeepEqual(productFounded, product_types.ProductSchema{}) {
+		return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
 	}
 
 	res := createProductResponseDto("Product founded", productFounded)
@@ -77,9 +75,7 @@ func (s *ProductService) GetAllProducts(ctx context.Context, in *productPb.GetAl
 
 	productsFounded, err := s.ProductStore.GetAll(ctx)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &productPb.MultipleProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
+		return &productPb.MultipleProductResponse{}, err
 	}
 
 	res := createMultipleProductsResponseDto("products found", productsFounded)
@@ -97,9 +93,6 @@ func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.Update
 
 	foundedProduct, err := s.ProductStore.GetOne(ctx, productId)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
 		return &productPb.ProductResponse{}, err
 	}
 	if reflect.DeepEqual(foundedProduct, product_types.ProductSchema{}) {
@@ -113,9 +106,6 @@ func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.Update
 
 	_, err = s.ProductStore.UpdateOne(ctx, userToUpdate)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
 		return &productPb.ProductResponse{}, err
 	}
 
@@ -134,9 +124,6 @@ func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.Delete
 
 	foundedProduct, err := s.ProductStore.GetOne(ctx, productId)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
 		return &productPb.ProductResponse{}, err
 	}
 	if reflect.DeepEqual(foundedProduct, product_types.ProductSchema{}) {
@@ -145,9 +132,6 @@ func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.Delete
 
 	_, err = s.ProductStore.DeleteOne(ctx, productId)
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
-		}
 		return &productPb.ProductResponse{}, err
 	}
 

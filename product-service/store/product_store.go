@@ -36,6 +36,9 @@ func (s *ProductStore) CreateOne(ctx context.Context, user product_types.Product
 
 	res, err := col.InsertOne(ctx, user)
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return &mongo.InsertOneResult{}, err
+		}
 		return &mongo.InsertOneResult{}, err
 	}
 
@@ -49,6 +52,9 @@ func (s *ProductStore) GetOne(ctx context.Context, id primitive.ObjectID) (produ
 	var res product_types.ProductSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return product_types.ProductSchema{}, err
+		}
 		return product_types.ProductSchema{}, err
 	}
 
@@ -61,6 +67,9 @@ func (s *ProductStore) GetAll(ctx context.Context) ([]product_types.ProductSchem
 	// Find all documents
 	cursor, err := col.Find(ctx, bson.D{})
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return []product_types.ProductSchema{}, err
+		}
 		return []product_types.ProductSchema{}, err
 	}
 	defer cursor.Close(ctx)
@@ -75,6 +84,9 @@ func (s *ProductStore) GetAll(ctx context.Context) ([]product_types.ProductSchem
 		results = append(results, result)
 	}
 	if err := cursor.Err(); err != nil {
+		if err != mongo.ErrNoDocuments {
+			return []product_types.ProductSchema{}, err
+		}
 		return []product_types.ProductSchema{}, err
 	}
 
@@ -88,6 +100,9 @@ func (s *ProductStore) UpdateOne(ctx context.Context, userToUpdate product_types
 
 	res, err := col.UpdateOne(ctx, filter, update)
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return &mongo.UpdateResult{}, err
+		}
 		return &mongo.UpdateResult{}, err
 	}
 
@@ -100,6 +115,9 @@ func (s *ProductStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*m
 
 	res, err := col.DeleteOne(ctx, filter)
 	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return &mongo.DeleteResult{}, err
+		}
 		return &mongo.DeleteResult{}, err
 	}
 
