@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ProductServiceClient interface {
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*ProductResponse, error)
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*ProductResponse, error)
+	GetAllProducts(ctx context.Context, in *GetAllProductsRequest, opts ...grpc.CallOption) (*MultipleProductResponse, error)
 	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*ProductResponse, error)
 	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*ProductResponse, error)
 }
@@ -54,6 +55,15 @@ func (c *productServiceClient) GetProduct(ctx context.Context, in *GetProductReq
 	return out, nil
 }
 
+func (c *productServiceClient) GetAllProducts(ctx context.Context, in *GetAllProductsRequest, opts ...grpc.CallOption) (*MultipleProductResponse, error) {
+	out := new(MultipleProductResponse)
+	err := c.cc.Invoke(ctx, "/productPb.ProductService/GetAllProducts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *productServiceClient) UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*ProductResponse, error) {
 	out := new(ProductResponse)
 	err := c.cc.Invoke(ctx, "/productPb.ProductService/UpdateProduct", in, out, opts...)
@@ -78,6 +88,7 @@ func (c *productServiceClient) DeleteProduct(ctx context.Context, in *DeleteProd
 type ProductServiceServer interface {
 	CreateProduct(context.Context, *CreateProductRequest) (*ProductResponse, error)
 	GetProduct(context.Context, *GetProductRequest) (*ProductResponse, error)
+	GetAllProducts(context.Context, *GetAllProductsRequest) (*MultipleProductResponse, error)
 	UpdateProduct(context.Context, *UpdateProductRequest) (*ProductResponse, error)
 	DeleteProduct(context.Context, *DeleteProductRequest) (*ProductResponse, error)
 	mustEmbedUnimplementedProductServiceServer()
@@ -92,6 +103,9 @@ func (UnimplementedProductServiceServer) CreateProduct(context.Context, *CreateP
 }
 func (UnimplementedProductServiceServer) GetProduct(context.Context, *GetProductRequest) (*ProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProduct not implemented")
+}
+func (UnimplementedProductServiceServer) GetAllProducts(context.Context, *GetAllProductsRequest) (*MultipleProductResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllProducts not implemented")
 }
 func (UnimplementedProductServiceServer) UpdateProduct(context.Context, *UpdateProductRequest) (*ProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateProduct not implemented")
@@ -148,6 +162,24 @@ func _ProductService_GetProduct_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductService_GetAllProducts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllProductsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServiceServer).GetAllProducts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/productPb.ProductService/GetAllProducts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServiceServer).GetAllProducts(ctx, req.(*GetAllProductsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ProductService_UpdateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateProductRequest)
 	if err := dec(in); err != nil {
@@ -198,6 +230,10 @@ var ProductService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProduct",
 			Handler:    _ProductService_GetProduct_Handler,
+		},
+		{
+			MethodName: "GetAllProducts",
+			Handler:    _ProductService_GetAllProducts_Handler,
 		},
 		{
 			MethodName: "UpdateProduct",

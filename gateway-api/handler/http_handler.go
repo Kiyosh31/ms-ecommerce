@@ -29,4 +29,8 @@ func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
 
 	// Product endpoints
 	mux.HandleFunc("POST /api/v1/product", h.createProduct)
+	mux.HandleFunc("GET /api/v1/product/{productId}", h.getProduct)
+	mux.HandleFunc("GET /api/v1/product/all", h.getAllProducts)
+	mux.HandleFunc("PUT /api/v1/product/{productId}", h.updateProduct)
+	mux.HandleFunc("DELETE /api/v1/product/{productId}", h.deleteProduct)
 }

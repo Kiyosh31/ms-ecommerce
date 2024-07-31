@@ -55,17 +55,30 @@ func (s *ProductStore) GetOne(ctx context.Context, id primitive.ObjectID) (produ
 	return res, nil
 }
 
-func (s *ProductStore) GetOneByEmail(ctx context.Context, email string) (product_types.ProductSchema, error) {
+func (s *ProductStore) GetAll(ctx context.Context) ([]product_types.ProductSchema, error) {
 	col := s.getCollection()
-	filter := bson.D{{Key: "email", Value: email}}
 
-	var res product_types.ProductSchema
-	err := col.FindOne(ctx, filter).Decode(&res)
+	// Find all documents
+	cursor, err := col.Find(ctx, bson.D{})
 	if err != nil {
-		return product_types.ProductSchema{}, err
+		return []product_types.ProductSchema{}, err
+	}
+	defer cursor.Close(ctx)
+
+	// Iterate over the cursor and decode results
+	var results []product_types.ProductSchema
+	for cursor.Next(ctx) {
+		var result product_types.ProductSchema
+		if err := cursor.Decode(&result); err != nil {
+			return []product_types.ProductSchema{}, err
+		}
+		results = append(results, result)
+	}
+	if err := cursor.Err(); err != nil {
+		return []product_types.ProductSchema{}, err
 	}
 
-	return res, nil
+	return results, nil
 }
 
 func (s *ProductStore) UpdateOne(ctx context.Context, userToUpdate product_types.ProductSchema) (*mongo.UpdateResult, error) {

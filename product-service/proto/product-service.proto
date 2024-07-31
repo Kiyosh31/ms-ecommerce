@@ -7,6 +7,7 @@ package productPb;
 service ProductService {
   rpc CreateProduct(CreateProductRequest) returns (ProductResponse);
   rpc GetProduct(GetProductRequest) returns (ProductResponse);
+  rpc GetAllProducts(GetAllProductsRequest) returns (MultipleProductResponse);
   rpc UpdateProduct(UpdateProductRequest) returns (ProductResponse);
   rpc DeleteProduct(DeleteProductRequest) returns (ProductResponse);
 }
@@ -24,6 +25,11 @@ message ProductResponse {
   Product product = 2;
 }
 
+message MultipleProductResponse {
+  string message = 1;
+  repeated Product products = 2;
+}
+
 message CreateProductRequest {
   Product product = 1;
 }
@@ -32,8 +38,10 @@ message GetProductRequest {
   string productId = 1;
 }
 
+message GetAllProductsRequest {}
+
 message UpdateProductRequest {
-  string productId = 1;
+  Product product = 1;
 }
 
 message DeleteProductRequest {
