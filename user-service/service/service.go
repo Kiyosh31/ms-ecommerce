@@ -1,8 +1,12 @@
 package service
 
-import "github.com/Kiyosh31/ms-ecommerce/user-service/store"
+import (
+	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/proto"
+	"github.com/Kiyosh31/ms-ecommerce/user-service/store"
+)
 
 type UserService struct {
+	userPb.UnimplementedUserServiceServer
 	GrpcAddr  string
 	UserStore store.UserStore
 }
