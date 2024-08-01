@@ -6,24 +6,27 @@ import (
 	cartPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/cart-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
+	"go.uber.org/zap"
 )
 
 type GatewayApiHandler struct {
 	userServiceClient    userPb.UserServiceClient
 	productServiceClient productPb.ProductServiceClient
 	cartProductClient    cartPb.CartServiceClient
+	logger               *zap.SugaredLogger
 }
 
 func NewHandler(
 	userServiceClient userPb.UserServiceClient,
 	productServiceClient productPb.ProductServiceClient,
 	cartProductClient cartPb.CartServiceClient,
-
+	logger *zap.SugaredLogger,
 ) *GatewayApiHandler {
 	return &GatewayApiHandler{
 		userServiceClient:    userServiceClient,
 		productServiceClient: productServiceClient,
 		cartProductClient:    cartProductClient,
+		logger:               logger,
 	}
 }
 

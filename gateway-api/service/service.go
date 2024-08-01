@@ -8,6 +8,7 @@ import (
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/handler"
+	"go.uber.org/zap"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -18,6 +19,7 @@ type GatewayService struct {
 	userClientGrpcAddr    string
 	productClientGrpcAddr string
 	cartClientGrpcAddr    string
+	logger                *zap.SugaredLogger
 }
 
 func NewGatewayHttpService(
@@ -25,12 +27,14 @@ func NewGatewayHttpService(
 	userClientGrpcAddr string,
 	productClientGrpcAddr string,
 	cartClientGrpcAddr string,
+	logger *zap.SugaredLogger,
 ) *GatewayService {
 	return &GatewayService{
 		httpAddr:              httpAddr,
 		userClientGrpcAddr:    userClientGrpcAddr,
 		productClientGrpcAddr: productClientGrpcAddr,
 		cartClientGrpcAddr:    cartClientGrpcAddr,
+		logger:                logger,
 	}
 }
 
@@ -45,42 +49,47 @@ func (s *GatewayService) Run() {
 	defer cartConn.Close()
 
 	mux := http.NewServeMux()
-	handler := handler.NewHandler(userServiceGrpcClient, productServiceGrpcClient, cartServiceGrpcClient)
+	handler := handler.NewHandler(
+		userServiceGrpcClient,
+		productServiceGrpcClient,
+		cartServiceGrpcClient,
+		s.logger,
+	)
 	handler.RegisterRoutes(mux)
 
-	log.Println("Http server starting at: ", s.httpAddr)
+	s.logger.Infof("Http server starting at: %v", s.httpAddr)
 
 	if err := http.ListenAndServe(s.httpAddr, mux); err != nil {
-		log.Fatalf("Failed to start http server: %v", err)
+		s.logger.Fatalf("Failed to start http server: %v", err)
 	}
 }
 
 func (s *GatewayService) runUserServiceGrpcClient() (userPb.UserServiceClient, *grpc.ClientConn) {
 	conn, err := grpc.NewClient(s.userClientGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		s.logger.Fatalf("Failed to start server: %v", err)
 	}
 
-	log.Println("Dialing user service at: ", s.userClientGrpcAddr)
+	s.logger.Infof("Dialing user service at: %v", s.userClientGrpcAddr)
 	return userPb.NewUserServiceClient(conn), conn
 }
 
 func (s *GatewayService) runProductServiceGrpcClient() (productPb.ProductServiceClient, *grpc.ClientConn) {
 	conn, err := grpc.NewClient(s.productClientGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		s.logger.Fatalf("Failed to start server: %v", err)
 	}
 
-	log.Println("Dialing product service at: ", s.productClientGrpcAddr)
+	log.Println("Dialing product service at: %v", s.productClientGrpcAddr)
 	return productPb.NewProductServiceClient(conn), conn
 }
 
 func (s *GatewayService) runCartServiceGrpcClient() (cartPb.CartServiceClient, *grpc.ClientConn) {
 	conn, err := grpc.NewClient(s.cartClientGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+		s.logger.Fatalf("Failed to start server: %v", err)
 	}
 
-	log.Println("Dialing cart service at: ", s.cartClientGrpcAddr)
+	s.logger.Infof("Dialing cart service at: %v", s.cartClientGrpcAddr)
 	return cartPb.NewCartServiceClient(conn), conn
 }

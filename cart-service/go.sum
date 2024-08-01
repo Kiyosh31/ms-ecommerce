@@ -1,5 +1,5 @@
-github.com/Kiyosh31/ms-ecommerce-common v1.17.5 h1:UnpWRTAMbh/ANRNwlV9awd8rqVbQCxySromUh08+DQ4=
-github.com/Kiyosh31/ms-ecommerce-common v1.17.5/go.mod h1:tITs3mpKKhosoIgBs9Gv+O1/o4KhX+OJSGGsVnqMWcQ=
+github.com/Kiyosh31/ms-ecommerce-common v1.17.7 h1:gFwJV/YmUiqMUOxCqiY3BaRN0quM5csSDkUtUKil+C0=
+github.com/Kiyosh31/ms-ecommerce-common v1.17.7/go.mod h1:tITs3mpKKhosoIgBs9Gv+O1/o4KhX+OJSGGsVnqMWcQ=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/snappy v0.0.4 h1:yAGX7huGHXlcLOEtBnF4w7FQwA26wojNCwOYAEhLjQM=
