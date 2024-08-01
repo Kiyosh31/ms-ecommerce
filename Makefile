@@ -46,7 +46,7 @@ cart:
 
 
 # Clean docker
-IMAGE_NAMES := gateway-api user-service product-service cart-service rabbitmq
+IMAGE_NAMES := gateway-api user-service product-service cart-service rabbitmq stock-service
 
 clean:
 	@for image in $(IMAGE_NAMES); do \

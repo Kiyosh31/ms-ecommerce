@@ -3,7 +3,7 @@ module github.com/Kiyosh31/ms-ecommerce/cart-service
 go 1.22.5
 
 require (
-	github.com/Kiyosh31/ms-ecommerce-common v1.17.7
+	github.com/Kiyosh31/ms-ecommerce-common v1.17.8
 	go.mongodb.org/mongo-driver v1.16.0
 	go.uber.org/zap v1.27.0
 	google.golang.org/grpc v1.65.0

@@ -131,6 +131,10 @@ func validateProductPayload(payload *productPb.Product) []error {
 		errs = append(errs, errors.New("missing price"))
 	}
 
+	if payload.GetAvailableQuantity() == 0 {
+		errs = append(errs, errors.New("missing availableQuantity"))
+	}
+
 	return errs
 }
 
