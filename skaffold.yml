@@ -44,3 +44,8 @@ portForward:
     resourceName: gateway-depl
     port: 3000
     localPort: 3000
+  - resourceType: service
+    resourceName: rabbitmq-srv
+    namespace: default
+    port: 15672
+    localPort: 15672

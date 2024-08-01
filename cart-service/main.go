@@ -42,7 +42,7 @@ func main() {
 	svc := service.NewCartService(vars.CART_SERVICE_GRPC_ADDR, *cartStore, logger)
 	cartPb.RegisterCartServiceServer(grpServer, svc)
 
-	logger.Infof("gRPC server started in port: ", vars.CART_SERVICE_GRPC_ADDR)
+	logger.Infof("gRPC server started in port: %v", vars.CART_SERVICE_GRPC_ADDR)
 	if err := grpServer.Serve(conn); err != nil {
 		logger.Fatal(err.Error())
 	}

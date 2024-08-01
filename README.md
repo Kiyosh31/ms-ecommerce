@@ -36,6 +36,10 @@ Have installed:
    make dev
    ```
 
+## Links
+
+- `RabbitMQ Management`: http://localhost:15672/
+
 # Commands (Makefile)
 
 - `make dev` It runs the project in developer mode

@@ -42,7 +42,7 @@ func main() {
 	svc := service.NewProductService(vars.PRODUCT_SERVICE_GRPC_ADDR, *productStore, logger)
 	productPb.RegisterProductServiceServer(grpServer, svc)
 
-	logger.Infof("gRPC server started in port: ", vars.PRODUCT_SERVICE_GRPC_ADDR)
+	logger.Infof("gRPC server started in port: %v", vars.PRODUCT_SERVICE_GRPC_ADDR)
 	if err := grpServer.Serve(conn); err != nil {
 		logger.Fatal(err.Error())
 	}
