@@ -25,11 +25,12 @@ func createProductSchemaDto(in *productPb.Product) (product_types.ProductSchema,
 	}
 
 	return product_types.ProductSchema{
-		ID:          productId,
-		SellerID:    sellerId,
-		Name:        in.GetName(),
-		Price:       in.GetPrice(),
-		Description: in.GetDescription(),
+		ID:                productId,
+		SellerID:          sellerId,
+		Name:              in.GetName(),
+		Price:             in.GetPrice(),
+		Description:       in.GetDescription(),
+		AvailableQuantity: in.GetAvailableQuantity(),
 	}, nil
 }
 
@@ -37,11 +38,12 @@ func createProductResponseDto(message string, in product_types.ProductSchema) *p
 	return &productPb.ProductResponse{
 		Message: message,
 		Product: &productPb.Product{
-			Id:          in.ID.Hex(),
-			Name:        in.Name,
-			Price:       in.Price,
-			Description: in.Description,
-			SellerId:    in.SellerID.Hex(),
+			Id:                in.ID.Hex(),
+			Name:              in.Name,
+			Price:             in.Price,
+			Description:       in.Description,
+			SellerId:          in.SellerID.Hex(),
+			AvailableQuantity: in.AvailableQuantity,
 		},
 	}
 }
@@ -51,11 +53,12 @@ func createMultipleProductsResponseDto(message string, in []product_types.Produc
 
 	for _, product := range in {
 		prod := productPb.Product{
-			Id:          product.ID.Hex(),
-			SellerId:    product.SellerID.Hex(),
-			Name:        product.Name,
-			Price:       product.Price,
-			Description: product.Description,
+			Id:                product.ID.Hex(),
+			SellerId:          product.SellerID.Hex(),
+			Name:              product.Name,
+			Price:             product.Price,
+			Description:       product.Description,
+			AvailableQuantity: product.AvailableQuantity,
 		}
 
 		products = append(products, &prod)

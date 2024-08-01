@@ -52,9 +52,6 @@ func (s *ProductStore) GetOne(ctx context.Context, id primitive.ObjectID) (produ
 	var res product_types.ProductSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return product_types.ProductSchema{}, err
-		}
 		return product_types.ProductSchema{}, err
 	}
 

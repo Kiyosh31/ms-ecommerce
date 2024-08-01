@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -10,6 +11,7 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/product_types"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -29,10 +31,10 @@ func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.Create
 	}
 
 	_, err = s.ProductStore.GetOne(ctx, productId)
-	if err != nil {
-		s.logger.Errorf("error getting product: %v", err)
-		return &productPb.ProductResponse{}, err
-	}
+	// if err != nil {
+	// 	s.logger.Errorf("error getting product: %v", err)
+	// 	return &productPb.ProductResponse{}, err
+	// }
 
 	createdProduct, err := s.ProductStore.CreateOne(ctx, productDto)
 	if err != nil {
@@ -46,6 +48,14 @@ func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.Create
 		return &productPb.ProductResponse{}, fmt.Errorf("failed to parse _id to string")
 	}
 	in.GetProduct().Id = id.Hex()
+
+	// send to queue
+	err = s.PublishMessage(id.Hex(), productDto)
+	if err != nil {
+		s.logger.Errorf("error publishing message to queue: %v", err)
+		return &productPb.ProductResponse{}, err
+	}
+	s.logger.Info("message published successfully...")
 
 	s.logger.Infof("create product request finished: %v", createdProduct)
 	return &productPb.ProductResponse{
@@ -125,6 +135,8 @@ func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.Update
 		return &productPb.ProductResponse{}, err
 	}
 
+	// send to queue
+
 	res := createProductResponseDto("Product updated successfully", userToUpdate)
 
 	s.logger.Infof("update product request finished: %v", err)
@@ -156,7 +168,35 @@ func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.Delete
 		return &productPb.ProductResponse{}, err
 	}
 
+	// send to queue
+
 	res := createProductResponseDto("Product deleted successfully", foundedProduct)
 	s.logger.Infof("product delete request finished: %v", res)
 	return res, nil
+}
+
+func (s *ProductService) PublishMessage(id string, in product_types.ProductSchema) error {
+	stock_queue_message, err := json.Marshal(product_types.StockMessageQueue{
+		ProductId:         id,
+		ProductName:       in.Name,
+		AvailableQuantity: in.AvailableQuantity,
+	})
+	s.logger.Info("creating message for queue")
+
+	if err != nil {
+		s.logger.Errorf("error sending message to queue: %v", err)
+		return err
+	}
+
+	s.logger.Infof("publishing message for queue: %v", string(stock_queue_message))
+	err = s.channel.PublishWithContext(context.Background(), "", s.queue.Name, false, false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        stock_queue_message,
+		})
+	if err != nil {
+		s.logger.Fatalf("error sending message to queue: %v: ", err)
+	}
+
+	return nil
 }

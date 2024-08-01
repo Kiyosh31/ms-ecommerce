@@ -6,6 +6,7 @@ import (
 
 	customlogger "github.com/Kiyosh31/ms-ecommerce-common/custom_logger"
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
+	"github.com/Kiyosh31/ms-ecommerce-common/messaging"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/config"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/service"
@@ -38,8 +39,25 @@ func main() {
 	}
 	defer database.DisconnectOfDB(mongoClient)
 
+	channel, close := messaging.ConnectAmqp(vars.RABBITMQ_MESSAGING_ACCESS_ADDR)
+	defer func() {
+		close()
+		channel.Close()
+	}()
+
+	queue, err := channel.QueueDeclare(vars.PRODUCT_SERVICE_QUEUE_NAME, true, false, false, false, nil)
+	if err != nil {
+		logger.Fatalf("error connecting to amqp: %v", err)
+	}
+
 	productStore := store.NewProductStore(mongoClient, vars.PRODUCT_SERVICE_DATABASE_NAME, vars.PRODUCT_SERVICE_DATABASE_COLLECTION)
-	svc := service.NewProductService(vars.PRODUCT_SERVICE_GRPC_ADDR, *productStore, logger)
+	svc := service.NewProductService(
+		vars.PRODUCT_SERVICE_GRPC_ADDR,
+		*productStore,
+		logger,
+		queue,
+		channel,
+	)
 	productPb.RegisterProductServiceServer(grpServer, svc)
 
 	logger.Infof("gRPC server started in port: %v", vars.PRODUCT_SERVICE_GRPC_ADDR)

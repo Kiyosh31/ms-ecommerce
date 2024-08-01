@@ -18,6 +18,7 @@ message Product {
   float price = 3;
   string description = 4;
   string sellerId = 5;
+  int32 availableQuantity = 6;
 }
 
 message ProductResponse {
