@@ -3,7 +3,7 @@ module github.com/Kiyosh31/ms-ecommerce/product-service
 go 1.22.5
 
 require (
-	github.com/Kiyosh31/ms-ecommerce-common v0.0.0-20240729191529-2c6b192475fe
+	github.com/Kiyosh31/ms-ecommerce-common v1.17.5
 	go.mongodb.org/mongo-driver v1.16.0
 	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2

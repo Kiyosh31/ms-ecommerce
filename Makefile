@@ -1,11 +1,9 @@
 dev:
 	skaffold dev
 
-dependencies:
-	cd cart-service && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
-	cd gateway-api && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
-	cd product-service && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
-	cd user-service && go get -u github.com/Kiyosh31/ms-ecommerce-common && go mod tidy
+dependency:
+	chmod +x update_common_dependency.sh
+	./update_common_dependency.sh
 
 # Proto
 USER_PROTO_PATH=./user-service/proto/user-service.proto
@@ -50,7 +48,7 @@ cart:
 # Clean docker
 IMAGE_NAMES := gateway-api user-service product-service cart-service
 
-clean-images:
+clean:
 	@for image in $(IMAGE_NAMES); do \
 		echo "\nDeleting all Docker images with name $$image..."; \
 		docker images | grep "$$image" | awk '{print $$3}' | xargs -r docker rmi -f || true; \
