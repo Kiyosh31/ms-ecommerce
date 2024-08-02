@@ -11,18 +11,6 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce/user-service/user_types"
 )
 
-func createUserPbDto(in user_types.UserSchema) userPb.User {
-	return userPb.User{
-		Id:       in.ID.Hex(),
-		Name:     in.Name,
-		Email:    in.Email,
-		Password: in.Password,
-		// Orders:    in.Orders,
-		Addresses: createAddressTypeDto(in.Addresses),
-		IsActive:  in.IsActive,
-	}
-}
-
 func createAddressPbDto(in []*userPb.Address) ([]user_types.Address, error) {
 	var addresses []user_types.Address
 
@@ -53,20 +41,20 @@ func createAddressPbDto(in []*userPb.Address) ([]user_types.Address, error) {
 	return addresses, nil
 }
 
-func createResponsePbDto(message string, id interface{}, in user_types.UserSchema) (userPb.Response, error) {
+func createResponsePbDto(message string, id interface{}, in user_types.UserSchema) (userPb.UserResponse, error) {
 	var userId primitive.ObjectID
 	var ok bool
 
 	if id != nil {
 		userId, ok = id.(primitive.ObjectID)
 		if !ok {
-			return userPb.Response{}, fmt.Errorf("failed to parse _id to string")
+			return userPb.UserResponse{}, fmt.Errorf("failed to parse _id to string")
 		}
 	} else {
 		userId = in.ID
 	}
 
-	return userPb.Response{
+	return userPb.UserResponse{
 		Message: message,
 		User: &userPb.User{
 			Id:        userId.Hex(),

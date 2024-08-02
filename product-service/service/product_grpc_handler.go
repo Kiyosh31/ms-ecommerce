@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -11,37 +10,61 @@ import (
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/product_types"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.CreateProductRequest) (*productPb.ProductResponse, error) {
+func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
 	s.logger.Infof("Create product incoming request: %v", in)
 
+	categoryId, err := database.GetMongoId(in.GetProduct().GetCategory().GetId())
+	if err != nil {
+		s.logger.Errorf("error getting categoryId: %v", err)
+		return &productPb.ProductResponse{}, err
+	}
+
+	brandId, err := database.GetMongoId(in.GetProduct().GetBrand().GetId())
+	if err != nil {
+		s.logger.Errorf("error getting brandId: %v", err)
+		return &productPb.ProductResponse{}, err
+	}
+
+	// check category exists
+	_, exists, err := s.CategoryStore.CategoryExists(ctx, categoryId)
+	if err != nil {
+		s.logger.Errorf("error finding existing category: %v", err)
+		return &productPb.ProductResponse{}, err
+	}
+	if !exists {
+		s.logger.Errorf("error category dont exists: %v", err)
+		return &productPb.ProductResponse{}, errors.New("category dont exist")
+	}
+
+	// check brand exists
+	_, exists, err = s.BrandStore.BrandExists(ctx, brandId)
+	if err != nil {
+		s.logger.Errorf("error finding existing brand: %v", err)
+		return &productPb.ProductResponse{}, err
+	}
+	if !exists {
+		s.logger.Errorf("error category dont exists: %v", err)
+		return &productPb.ProductResponse{}, errors.New("brand dont exist")
+	}
+
+	// create product schema for db
 	productDto, err := createProductSchemaDto(in.GetProduct())
 	if err != nil {
 		s.logger.Errorf("error creating schema: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
 
-	productId, err := database.GetMongoId(productDto.ID.Hex())
-	if err != nil {
-		s.logger.Errorf("error creating productId: %v", err)
-		return &productPb.ProductResponse{}, err
-	}
-
-	_, err = s.ProductStore.GetOne(ctx, productId)
-	// if err != nil {
-	// 	s.logger.Errorf("error getting product: %v", err)
-	// 	return &productPb.ProductResponse{}, err
-	// }
-
+	// saving product to db
 	createdProduct, err := s.ProductStore.CreateOne(ctx, productDto)
 	if err != nil {
 		s.logger.Errorf("error creating product: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
 
+	// getting productID created in db
 	id, ok := createdProduct.InsertedID.(primitive.ObjectID)
 	if !ok {
 		s.logger.Errorf("error getting id: %v", err)
@@ -49,22 +72,15 @@ func (s *ProductService) CreateProduct(ctx context.Context, in *productPb.Create
 	}
 	in.GetProduct().Id = id.Hex()
 
-	// send to queue
-	err = s.PublishMessage(id.Hex(), productDto)
-	if err != nil {
-		s.logger.Errorf("error publishing message to queue: %v", err)
-		return &productPb.ProductResponse{}, err
-	}
-	s.logger.Info("message published successfully...")
-
+	// return response
 	s.logger.Infof("create product request finished: %v", createdProduct)
 	return &productPb.ProductResponse{
 		Message: "Product created successfully",
-		Product: in.GetProduct(),
+		Product: []*productPb.Product{in.GetProduct()},
 	}, nil
 }
 
-func (s *ProductService) GetProduct(ctx context.Context, in *productPb.GetProductRequest) (*productPb.ProductResponse, error) {
+func (s *ProductService) GetProduct(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
 	s.logger.Infof("Get product incoming request: %v", in)
 
 	productId, err := database.GetMongoId(in.GetProductId())
@@ -89,13 +105,13 @@ func (s *ProductService) GetProduct(ctx context.Context, in *productPb.GetProduc
 	return res, nil
 }
 
-func (s *ProductService) GetAllProducts(ctx context.Context, in *productPb.GetAllProductsRequest) (*productPb.MultipleProductResponse, error) {
+func (s *ProductService) GetAllProducts(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
 	s.logger.Infof("get all products incoming request: %v", in)
 
 	productsFounded, err := s.ProductStore.GetAll(ctx)
 	if err != nil {
 		s.logger.Errorf("error finding products: %v", err)
-		return &productPb.MultipleProductResponse{}, err
+		return &productPb.ProductResponse{}, err
 	}
 
 	res := createMultipleProductsResponseDto("products found", productsFounded)
@@ -104,7 +120,7 @@ func (s *ProductService) GetAllProducts(ctx context.Context, in *productPb.GetAl
 	return res, nil
 }
 
-func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.UpdateProductRequest) (*productPb.ProductResponse, error) {
+func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
 	s.logger.Infof("Update product incoming request: %v", in)
 
 	productId, err := database.GetMongoId(in.GetProduct().GetId())
@@ -113,37 +129,35 @@ func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.Update
 		return &productPb.ProductResponse{}, err
 	}
 
-	foundedProduct, err := s.ProductStore.GetOne(ctx, productId)
+	_, exists, err := s.ProductStore.ProductExists(ctx, productId)
 	if err != nil {
-		s.logger.Errorf("error finding product: %v", err)
+		s.logger.Errorf("error finding existing product: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
-	if reflect.DeepEqual(foundedProduct, product_types.ProductSchema{}) {
-		s.logger.Errorf("error existing product: %v", err)
-		return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
+	if !exists {
+		s.logger.Errorf("error product dont exists: %v", err)
+		return &productPb.ProductResponse{}, errors.New("user already exists")
 	}
 
-	userToUpdate, err := createProductSchemaDto(in.GetProduct())
+	productToUpdate, err := createProductSchemaDto(in.GetProduct())
 	if err != nil {
 		s.logger.Errorf("error creating product schema: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
 
-	_, err = s.ProductStore.UpdateOne(ctx, userToUpdate)
+	_, err = s.ProductStore.UpdateOne(ctx, productToUpdate)
 	if err != nil {
 		s.logger.Errorf("error updating product: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
 
-	// send to queue
-
-	res := createProductResponseDto("Product updated successfully", userToUpdate)
+	res := createProductResponseDto("Product updated successfully", productToUpdate)
 
 	s.logger.Infof("update product request finished: %v", err)
 	return res, nil
 }
 
-func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.DeleteProductRequest) (*productPb.ProductResponse, error) {
+func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
 	s.logger.Infof("Delete product incoming request: %v", in)
 
 	productId, err := database.GetMongoId(in.GetProductId())
@@ -152,14 +166,14 @@ func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.Delete
 		return &productPb.ProductResponse{}, err
 	}
 
-	foundedProduct, err := s.ProductStore.GetOne(ctx, productId)
+	foundedProduct, exists, err := s.ProductStore.ProductExists(ctx, productId)
 	if err != nil {
-		s.logger.Errorf("error finding product: %v", err)
+		s.logger.Errorf("error finding existing product: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
-	if reflect.DeepEqual(foundedProduct, product_types.ProductSchema{}) {
-		s.logger.Errorf("error existing product: %v", err)
-		return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
+	if !exists {
+		s.logger.Errorf("error product dont exists: %v", err)
+		return &productPb.ProductResponse{}, errors.New("user already exists")
 	}
 
 	_, err = s.ProductStore.DeleteOne(ctx, productId)
@@ -168,35 +182,7 @@ func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.Delete
 		return &productPb.ProductResponse{}, err
 	}
 
-	// send to queue
-
 	res := createProductResponseDto("Product deleted successfully", foundedProduct)
 	s.logger.Infof("product delete request finished: %v", res)
 	return res, nil
-}
-
-func (s *ProductService) PublishMessage(id string, in product_types.ProductSchema) error {
-	stock_queue_message, err := json.Marshal(product_types.StockMessageQueue{
-		ProductId:         id,
-		ProductName:       in.Name,
-		AvailableQuantity: in.AvailableQuantity,
-	})
-	s.logger.Info("creating message for queue")
-
-	if err != nil {
-		s.logger.Errorf("error sending message to queue: %v", err)
-		return err
-	}
-
-	s.logger.Infof("publishing message for queue: %v", string(stock_queue_message))
-	err = s.channel.PublishWithContext(context.Background(), "", s.queue.Name, false, false,
-		amqp.Publishing{
-			ContentType: "application/json",
-			Body:        stock_queue_message,
-		})
-	if err != nil {
-		s.logger.Fatalf("error sending message to queue: %v: ", err)
-	}
-
-	return nil
 }

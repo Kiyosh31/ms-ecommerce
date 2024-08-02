@@ -24,7 +24,7 @@ func (h *GatewayApiHandler) createUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.userServiceClient.CreateUser(r.Context(), &userPb.CreateUserRequest{
+	res, err := h.userServiceClient.CreateUser(r.Context(), &userPb.UserRequest{
 		User: &payload,
 	})
 	if err != nil {
@@ -41,8 +41,8 @@ func (h *GatewayApiHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("userId")
 	h.logger.Info("get user request incoming: %v", userId)
 
-	res, err := h.userServiceClient.GetUser(r.Context(), &userPb.GetUserRequest{
-		UserId: userId,
+	res, err := h.userServiceClient.GetUser(r.Context(), &userPb.UserRequest{
+		UserId: &userId,
 	})
 	if err != nil {
 		h.logger.Errorf("error trying to get user: %v", err.Error())
@@ -72,16 +72,8 @@ func (h *GatewayApiHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.userServiceClient.UpdateUser(r.Context(), &userPb.UpdateUserRequest{
-		User: &userPb.User{
-			Id:        userId,
-			Name:      payload.Name,
-			Email:     payload.Email,
-			Password:  payload.Password,
-			Orders:    payload.Orders,
-			Addresses: payload.Addresses,
-			IsActive:  true,
-		},
+	res, err := h.userServiceClient.UpdateUser(r.Context(), &userPb.UserRequest{
+		User: &payload,
 	})
 	if err != nil {
 		h.logger.Errorf("error updating user: %v", err)
@@ -102,8 +94,8 @@ func (h *GatewayApiHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.userServiceClient.DeleteUser(r.Context(), &userPb.DeleteUserRequest{
-		UserId: userId,
+	res, err := h.userServiceClient.DeleteUser(r.Context(), &userPb.UserRequest{
+		UserId: &userId,
 	})
 	if err != nil {
 		h.logger.Errorf("error deleting user: %v", err)
@@ -117,7 +109,7 @@ func (h *GatewayApiHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *GatewayApiHandler) reactivateUser(w http.ResponseWriter, r *http.Request) {
 	h.logger.Infof("reactivate user request incoming: %v", customlogger.ReadRequestPayload(r))
-	var payload userPb.ReactivarUserRequest
+	var payload userPb.ReactivateUserRequest
 
 	if err := utils.ReadJSON(r, &payload); err != nil {
 		h.logger.Errorf("error reading payload: %v", err.Error())

@@ -24,7 +24,7 @@ func (h *GatewayApiHandler) createProduct(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res, err := h.productServiceClient.CreateProduct(r.Context(), &productPb.CreateProductRequest{
+	res, err := h.productServiceClient.CreateProduct(r.Context(), &productPb.ProductRequest{
 		Product: &payload,
 	})
 	if err != nil {
@@ -41,8 +41,8 @@ func (h *GatewayApiHandler) getProduct(w http.ResponseWriter, r *http.Request) {
 	h.logger.Infof("get product request incoming: %v", customlogger.ReadRequestPayload(r))
 	productId := r.PathValue("productId")
 
-	res, err := h.productServiceClient.GetProduct(r.Context(), &productPb.GetProductRequest{
-		ProductId: productId,
+	res, err := h.productServiceClient.GetProduct(r.Context(), &productPb.ProductRequest{
+		ProductId: &productId,
 	})
 	if err != nil {
 		h.logger.Errorf("failed to get product: %v", err)
@@ -57,7 +57,7 @@ func (h *GatewayApiHandler) getProduct(w http.ResponseWriter, r *http.Request) {
 func (h *GatewayApiHandler) getAllProducts(w http.ResponseWriter, r *http.Request) {
 	h.logger.Info("get all products request incoming")
 
-	res, err := h.productServiceClient.GetAllProducts(r.Context(), &productPb.GetAllProductsRequest{})
+	res, err := h.productServiceClient.GetAllProducts(r.Context(), &productPb.ProductRequest{})
 	if err != nil {
 		h.logger.Errorf("failed to get all products: %v", err)
 		utils.WriteRpcError(err, w)
@@ -86,14 +86,8 @@ func (h *GatewayApiHandler) updateProduct(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res, err := h.productServiceClient.UpdateProduct(r.Context(), &productPb.UpdateProductRequest{
-		Product: &productPb.Product{
-			Id:          productId,
-			Name:        payload.GetName(),
-			Price:       payload.GetPrice(),
-			Description: payload.GetDescription(),
-			SellerId:    payload.GetSellerId(),
-		},
+	res, err := h.productServiceClient.UpdateProduct(r.Context(), &productPb.ProductRequest{
+		Product: &payload,
 	})
 	if err != nil {
 		h.logger.Errorf("failed to update product: %v", err)
@@ -114,8 +108,8 @@ func (h *GatewayApiHandler) deleteProduct(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res, err := h.productServiceClient.DeleteProduct(r.Context(), &productPb.DeleteProductRequest{
-		ProductId: productId,
+	res, err := h.productServiceClient.DeleteProduct(r.Context(), &productPb.ProductRequest{
+		ProductId: &productId,
 	})
 	if err != nil {
 		h.logger.Errorf("failed to delete product: %v", err)

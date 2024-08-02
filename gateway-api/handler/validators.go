@@ -63,7 +63,7 @@ func validateAddress(addresses []*userPb.Address) error {
 	return nil
 }
 
-func validateReactivateUser(payload *userPb.ReactivarUserRequest) []error {
+func validateReactivateUser(payload *userPb.ReactivateUserRequest) []error {
 	var errs []error
 
 	if payload.GetEmail() == "" {
@@ -81,10 +81,6 @@ func validateReactivateUser(payload *userPb.ReactivarUserRequest) []error {
 func validateProductPayload(payload *productPb.Product) []error {
 	var errs []error
 
-	if payload.GetSellerId() == "" {
-		errs = append(errs, errors.New("missing sellerId"))
-	}
-
 	if payload.GetName() == "" {
 		errs = append(errs, errors.New("missing name"))
 	}
@@ -97,8 +93,63 @@ func validateProductPayload(payload *productPb.Product) []error {
 		errs = append(errs, errors.New("missing price"))
 	}
 
-	if payload.GetAvailableQuantity() == 0 {
-		errs = append(errs, errors.New("missing availableQuantity"))
+	if payload.GetCategory() == nil {
+		errs = append(errs, errors.New("missing category"))
+	} else {
+		if payload.GetCategory().GetId() == "" {
+			errs = append(errs, errors.New("category: Missing category id"))
+		}
+		if payload.GetCategory().GetName() == "" {
+			errs = append(errs, errors.New("category: Missing name"))
+		}
+
+		if payload.GetCategory().GetDescription() == "" {
+			errs = append(errs, errors.New("category: Missing description"))
+		}
+
+		if payload.GetCategory().GetParentCategory() == "" {
+			errs = append(errs, errors.New("category: Missing parentCategory"))
+		}
+	}
+
+	if payload.GetBrand() == nil {
+		errs = append(errs, errors.New("missing brand"))
+	} else {
+		if payload.GetBrand().GetId() == "" {
+			errs = append(errs, errors.New("brand: Missing brand id"))
+		}
+
+		if payload.GetBrand().GetName() == "" {
+			errs = append(errs, errors.New("brand: Missing name"))
+		}
+
+		if payload.GetBrand().GetDescription() == "" {
+			errs = append(errs, errors.New("brand: Missing description"))
+		}
+	}
+
+	if payload.GetImages() == nil {
+		errs = append(errs, errors.New("missing images"))
+	}
+
+	if payload.GetAttributes() == nil {
+		errs = append(errs, errors.New("missing attributes"))
+	} else {
+		if payload.GetAttributes().GetSize() == 0 {
+			errs = append(errs, errors.New("attributes: missing size"))
+		}
+
+		if payload.GetAttributes().GetColor() == "" {
+			errs = append(errs, errors.New("attributes: missing color"))
+		}
+
+		if payload.GetAttributes().GetMaterial() == "" {
+			errs = append(errs, errors.New("attributes: missing material"))
+		}
+	}
+
+	if payload.GetInventory() == nil {
+		errs = append(errs, errors.New("missing inventory"))
 	}
 
 	return errs

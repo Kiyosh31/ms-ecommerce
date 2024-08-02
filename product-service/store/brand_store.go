@@ -10,25 +10,25 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type ProductStore struct {
+type BrandStore struct {
 	client        *mongo.Client
 	database_name string
 	col           *mongo.Collection
 }
 
-func NewProductStore(
+func NewBrandStore(
 	client *mongo.Client,
 	database_name string,
 	database_collection_name string,
-) *ProductStore {
-	return &ProductStore{
+) *BrandStore {
+	return &BrandStore{
 		client:        client,
 		database_name: database_name,
 		col:           client.Database(database_name).Collection(database_collection_name),
 	}
 }
 
-func (s *ProductStore) CreateOne(ctx context.Context, user product_types.ProductSchema) (*mongo.InsertOneResult, error) {
+func (s *BrandStore) CreateOne(ctx context.Context, user product_types.BrandSchema) (*mongo.InsertOneResult, error) {
 	res, err := s.col.InsertOne(ctx, user)
 	if err != nil {
 		return &mongo.InsertOneResult{}, err
@@ -37,22 +37,22 @@ func (s *ProductStore) CreateOne(ctx context.Context, user product_types.Product
 	return res, nil
 }
 
-func (s *ProductStore) GetOne(ctx context.Context, id primitive.ObjectID) (product_types.ProductSchema, error) {
+func (s *BrandStore) GetOne(ctx context.Context, id primitive.ObjectID) (product_types.BrandSchema, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 
-	var res product_types.ProductSchema
+	var res product_types.BrandSchema
 	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		return product_types.ProductSchema{}, err
+		return product_types.BrandSchema{}, err
 	}
 
 	return res, nil
 }
 
-func (s *ProductStore) ProductExists(ctx context.Context, id primitive.ObjectID) (product_types.ProductSchema, bool, error) {
+func (s *BrandStore) BrandExists(ctx context.Context, id primitive.ObjectID) (product_types.BrandSchema, bool, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 
-	var res product_types.ProductSchema
+	var res product_types.BrandSchema
 	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -64,32 +64,32 @@ func (s *ProductStore) ProductExists(ctx context.Context, id primitive.ObjectID)
 	return res, true, nil // User found
 }
 
-func (s *ProductStore) GetAll(ctx context.Context) ([]product_types.ProductSchema, error) {
+func (s *BrandStore) GetAll(ctx context.Context) ([]product_types.BrandSchema, error) {
 
 	// Find all documents
 	cursor, err := s.col.Find(ctx, bson.D{})
 	if err != nil {
-		return []product_types.ProductSchema{}, err
+		return []product_types.BrandSchema{}, err
 	}
 	defer cursor.Close(ctx)
 
 	// Iterate over the cursor and decode results
-	var results []product_types.ProductSchema
+	var results []product_types.BrandSchema
 	for cursor.Next(ctx) {
-		var result product_types.ProductSchema
+		var result product_types.BrandSchema
 		if err := cursor.Decode(&result); err != nil {
-			return []product_types.ProductSchema{}, err
+			return []product_types.BrandSchema{}, err
 		}
 		results = append(results, result)
 	}
 	if err := cursor.Err(); err != nil {
-		return []product_types.ProductSchema{}, err
+		return []product_types.BrandSchema{}, err
 	}
 
 	return results, nil
 }
 
-func (s *ProductStore) UpdateOne(ctx context.Context, userToUpdate product_types.ProductSchema) (*mongo.UpdateResult, error) {
+func (s *BrandStore) UpdateOne(ctx context.Context, userToUpdate product_types.BrandSchema) (*mongo.UpdateResult, error) {
 	filter := bson.D{{Key: "_id", Value: userToUpdate.ID}}
 	update := bson.D{{Key: "$set", Value: userToUpdate}}
 
@@ -101,7 +101,7 @@ func (s *ProductStore) UpdateOne(ctx context.Context, userToUpdate product_types
 	return res, nil
 }
 
-func (s *ProductStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
+func (s *BrandStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 
 	res, err := s.col.DeleteOne(ctx, filter)

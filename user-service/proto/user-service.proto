@@ -5,11 +5,11 @@ option go_package="github.com/Kiyosh31/ms-ecommerce/user-service/userPb";
 package userPb;
 
 service UserService {
-  rpc CreateUser(CreateUserRequest) returns (Response);
-  rpc GetUser(GetUserRequest) returns (Response);
-  rpc UpdateUser(UpdateUserRequest) returns (Response);
-  rpc DeleteUser(DeleteUserRequest) returns (Response);
-  rpc ReactivateUser(ReactivarUserRequest) returns(Response);
+  rpc CreateUser(UserRequest) returns (UserResponse);
+  rpc GetUser(UserRequest) returns (UserResponse);
+  rpc UpdateUser(UserRequest) returns (UserResponse);
+  rpc DeleteUser(UserRequest) returns (UserResponse);
+  rpc ReactivateUser(ReactivateUserRequest) returns(UserResponse);
 }
 
 message User {
@@ -32,28 +32,17 @@ message Address {
   int64 zipCode = 7;
 }
 
-message CreateUserRequest {
-  User user = 1;
+message UserRequest {
+  optional string userId = 1;
+  optional User user = 2;
 }
 
-message GetUserRequest {
-  string userId = 1;
-}
-
-message UpdateUserRequest {
-  User user = 1;
-}
-
-message DeleteUserRequest {
-  string userId = 1;
-}
-
-message ReactivarUserRequest {
+message ReactivateUserRequest {
   string email = 1;
   string password = 2;
 }
 
-message Response {
+message UserResponse {
   string message = 1;
   User user = 2;
 }

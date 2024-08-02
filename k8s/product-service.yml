@@ -36,11 +36,21 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: PRODUCT_SERVICE_DATABASE_NAME
-            - name: PRODUCT_SERVICE_DATABASE_COLLECTION
+            - name: PRODUCT_SERVICE_PRODUCTS_DATABASE_COLLECTION
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: PRODUCT_SERVICE_DATABASE_COLLECTION
+                  key: PRODUCT_SERVICE_PRODUCTS_DATABASE_COLLECTION
+            - name: PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION
+            - name: PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION
             - name: RABBITMQ_MESSAGING_ACCESS_ADDR
               valueFrom:
                 secretKeyRef:

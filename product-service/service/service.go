@@ -3,31 +3,30 @@ package service
 import (
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
 	"github.com/Kiyosh31/ms-ecommerce/product-service/store"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"go.uber.org/zap"
 )
 
 type ProductService struct {
 	productPb.UnimplementedProductServiceServer
-	GrpcAdd      string
-	ProductStore store.ProductStore
-	logger       *zap.SugaredLogger
-	queue        amqp.Queue
-	channel      *amqp.Channel
+	GrpcAdd       string
+	ProductStore  store.ProductStore
+	BrandStore    store.BrandStore
+	CategoryStore store.CategoryStore
+	logger        *zap.SugaredLogger
 }
 
 func NewProductService(
 	grpcAdd string,
 	productStore store.ProductStore,
+	BrandStore store.BrandStore,
+	CategoryStore store.CategoryStore,
 	logger *zap.SugaredLogger,
-	queue amqp.Queue,
-	channel *amqp.Channel,
 ) *ProductService {
 	return &ProductService{
-		GrpcAdd:      grpcAdd,
-		ProductStore: productStore,
-		logger:       logger,
-		queue:        queue,
-		channel:      channel,
+		GrpcAdd:       grpcAdd,
+		ProductStore:  productStore,
+		CategoryStore: CategoryStore,
+		BrandStore:    BrandStore,
+		logger:        logger,
 	}
 }

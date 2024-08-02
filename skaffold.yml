@@ -34,6 +34,7 @@ manifests:
 portForward:
   - resourceType: deployment
     resourceName: gateway-depl
+    namespace: default
     port: 3000
     localPort: 3000
   - resourceType: service

@@ -11,31 +11,25 @@ import (
 )
 
 type UserStore struct {
-	client              *mongo.Client
-	database_name       string
-	database_collection string
+	client        *mongo.Client
+	database_name string
+	col           *mongo.Collection
 }
 
 func NewUserStore(
 	client *mongo.Client,
 	database_name string,
-	database_collection string,
+	database_collection_name string,
 ) *UserStore {
 	return &UserStore{
-		client:              client,
-		database_name:       database_name,
-		database_collection: database_collection,
+		client:        client,
+		database_name: database_name,
+		col:           client.Database(database_name).Collection(database_collection_name),
 	}
 }
 
-func (s *UserStore) getUserCollection() *mongo.Collection {
-	return s.client.Database(s.database_name).Collection(s.database_collection)
-}
-
 func (s *UserStore) CreateOne(ctx context.Context, user user_types.UserSchema) (*mongo.InsertOneResult, error) {
-	col := s.getUserCollection()
-
-	res, err := col.InsertOne(ctx, user)
+	res, err := s.col.InsertOne(ctx, user)
 	if err != nil {
 		return &mongo.InsertOneResult{}, err
 	}
@@ -44,14 +38,13 @@ func (s *UserStore) CreateOne(ctx context.Context, user user_types.UserSchema) (
 }
 
 func (s *UserStore) GetOne(ctx context.Context, id primitive.ObjectID) (user_types.UserSchema, error) {
-	col := s.getUserCollection()
 	filter := bson.D{
 		{Key: "_id", Value: id},
 		{Key: "isActive", Value: true},
 	}
 
 	var res user_types.UserSchema
-	err := col.FindOne(ctx, filter).Decode(&res)
+	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		return user_types.UserSchema{}, err
 	}
@@ -60,14 +53,13 @@ func (s *UserStore) GetOne(ctx context.Context, id primitive.ObjectID) (user_typ
 }
 
 func (s *UserStore) GetOneDeactivated(ctx context.Context, email string) (user_types.UserSchema, error) {
-	col := s.getUserCollection()
 	filter := bson.D{
 		{Key: "email", Value: email},
 		{Key: "isActive", Value: false},
 	}
 
 	var res user_types.UserSchema
-	err := col.FindOne(ctx, filter).Decode(&res)
+	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		return user_types.UserSchema{}, err
 	}
@@ -76,14 +68,13 @@ func (s *UserStore) GetOneDeactivated(ctx context.Context, email string) (user_t
 }
 
 func (s *UserStore) GetOneByEmail(ctx context.Context, email string) (user_types.UserSchema, error) {
-	col := s.getUserCollection()
 	filter := bson.D{
 		{Key: "email", Value: email},
 		{Key: "isActive", Value: true},
 	}
 
 	var res user_types.UserSchema
-	err := col.FindOne(ctx, filter).Decode(&res)
+	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		return user_types.UserSchema{}, err
 	}
@@ -92,14 +83,13 @@ func (s *UserStore) GetOneByEmail(ctx context.Context, email string) (user_types
 }
 
 func (s *UserStore) UserExists(ctx context.Context, email string) (bool, error) {
-	col := s.getUserCollection()
 	filter := bson.D{
 		{Key: "email", Value: email},
 		{Key: "isActive", Value: true},
 	}
 
 	var res user_types.UserSchema
-	err := col.FindOne(ctx, filter).Decode(&res)
+	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return false, nil // User not found
@@ -111,11 +101,10 @@ func (s *UserStore) UserExists(ctx context.Context, email string) (bool, error) 
 }
 
 func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserSchema) (*mongo.UpdateResult, error) {
-	col := s.getUserCollection()
 	filter := bson.D{{Key: "_id", Value: userToUpdate.ID}}
 	update := bson.D{{Key: "$set", Value: userToUpdate}}
 
-	res, err := col.UpdateOne(ctx, filter, update)
+	res, err := s.col.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return &mongo.UpdateResult{}, err
 	}
@@ -124,13 +113,12 @@ func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserS
 }
 
 func (s *UserStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
-	col := s.getUserCollection()
 	filter := bson.D{
 		{Key: "_id", Value: id},
 		{Key: "isActive", Value: true},
 	}
 
-	res, err := col.DeleteOne(ctx, filter)
+	res, err := s.col.DeleteOne(ctx, filter)
 	if err != nil {
 		return &mongo.DeleteResult{}, err
 	}

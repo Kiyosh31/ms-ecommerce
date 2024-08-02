@@ -40,4 +40,16 @@ func (h *GatewayApiHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/product/all", h.getAllProducts)
 	router.HandleFunc("PUT /api/v1/product/{productId}", h.updateProduct)
 	router.HandleFunc("DELETE /api/v1/product/{productId}", h.deleteProduct)
+
+	// Category endpoints
+	router.HandleFunc("POST /api/v1/category", h.createCategory)
+	router.HandleFunc("GET /api/v1/category/{categoryId}", h.getCategory)
+	router.HandleFunc("PUT /api/v1/category/{categoryId}", h.updateCategory)
+	router.HandleFunc("DELETE /api/v1/category/{categoryId}", h.deleteCategory)
+
+	// Brand endpoints
+	router.HandleFunc("POST /api/v1/brand", h.createBrand)
+	router.HandleFunc("GET /api/v1/brand/{brandId}", h.getBrand)
+	router.HandleFunc("PUT /api/v1/brand/{brandId}", h.updateBrand)
+	router.HandleFunc("DELETE /api/v1/brand/{brandId}", h.deleteBrand)
 }
