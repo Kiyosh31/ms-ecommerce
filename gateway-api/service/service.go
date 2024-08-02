@@ -1,7 +1,6 @@
 package service
 
 import (
-	"log"
 	"net/http"
 
 	cartPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/cart-service"
@@ -48,18 +47,19 @@ func (s *GatewayService) Run() {
 	cartServiceGrpcClient, cartConn := s.runCartServiceGrpcClient()
 	defer cartConn.Close()
 
-	mux := http.NewServeMux()
 	handler := handler.NewHandler(
 		userServiceGrpcClient,
 		productServiceGrpcClient,
 		cartServiceGrpcClient,
 		s.logger,
 	)
-	handler.RegisterRoutes(mux)
+
+	router := http.NewServeMux()
+	handler.RegisterRoutes(router)
 
 	s.logger.Infof("Http server starting at: %v", s.httpAddr)
 
-	if err := http.ListenAndServe(s.httpAddr, mux); err != nil {
+	if err := http.ListenAndServe(s.httpAddr, router); err != nil {
 		s.logger.Fatalf("Failed to start http server: %v", err)
 	}
 }
@@ -80,7 +80,7 @@ func (s *GatewayService) runProductServiceGrpcClient() (productPb.ProductService
 		s.logger.Fatalf("Failed to start server: %v", err)
 	}
 
-	log.Println("Dialing product service at: %v", s.productClientGrpcAddr)
+	s.logger.Infof("Dialing product service at: %v", s.productClientGrpcAddr)
 	return productPb.NewProductServiceClient(conn), conn
 }
 

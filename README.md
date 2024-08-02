@@ -6,10 +6,6 @@ e-commerce microservices made in `go/golang`, `docker`, `kubernetes`, `gRPC`, `R
 
 You can find here the [common module](https://github.com/Kiyosh31/ms-ecommerce-common) used to share code and utils in this project
 
-# Architecture
-
-![ms-ecommerce](./img/ms-ecommerce-arch.png "a title")
-
 # Usage
 
 ### Pre requisites

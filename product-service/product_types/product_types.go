@@ -8,7 +8,7 @@ type ProductSchema struct {
 	Name              string             `bson:"name" binding:"required"`
 	Price             float32            `bson:"price" binding:"required"`
 	Description       string             `bson:"description" binding:"required"`
-	AvailableQuantity int32              `bson:"availableQuantity" bonding:"required"`
+	AvailableQuantity int32              `bson:"availableQuantity" binding:"required"`
 }
 
 type StockMessageQueue struct {

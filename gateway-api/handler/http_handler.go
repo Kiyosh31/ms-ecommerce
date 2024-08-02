@@ -30,24 +30,23 @@ func NewHandler(
 	}
 }
 
-func (h *GatewayApiHandler) RegisterRoutes(mux *http.ServeMux) {
+func (h *GatewayApiHandler) RegisterRoutes(router *http.ServeMux) {
 	// User endpoints
-	mux.HandleFunc("POST /api/v1/user", h.createUser)
-	mux.HandleFunc("GET /api/v1/user/{userId}", h.getUser)
-	mux.HandleFunc("PUT /api/v1/user/{userId}", h.updateUser)
-	mux.HandleFunc("DELETE /api/v1/user/{userId}", h.deleteUser)
-	mux.HandleFunc("POST /api/v1/user/reactivate", h.reactivateUser)
+	router.HandleFunc("POST /api/v1/user", h.createUser)
+	router.HandleFunc("GET /api/v1/user/{userId}", h.getUser)
+	router.HandleFunc("PUT /api/v1/user/{userId}", h.updateUser)
+	router.HandleFunc("DELETE /api/v1/user/{userId}", h.deleteUser)
+	router.HandleFunc("POST /api/v1/user/reactivate", h.reactivateUser)
 
 	// Product endpoints
-	mux.HandleFunc("POST /api/v1/product", h.createProduct)
-	mux.HandleFunc("GET /api/v1/product/{productId}", h.getProduct)
-	mux.HandleFunc("GET /api/v1/product/all", h.getAllProducts)
-	mux.HandleFunc("PUT /api/v1/product/{productId}", h.updateProduct)
-	mux.HandleFunc("DELETE /api/v1/product/{productId}", h.deleteProduct)
+	router.HandleFunc("POST /api/v1/product", h.createProduct)
+	router.HandleFunc("GET /api/v1/product/{productId}", h.getProduct)
+	router.HandleFunc("GET /api/v1/product/all", h.getAllProducts)
+	router.HandleFunc("PUT /api/v1/product/{productId}", h.updateProduct)
+	router.HandleFunc("DELETE /api/v1/product/{productId}", h.deleteProduct)
 
 	// Cart endpoints
-	mux.HandleFunc("POST /api/v1/cart", h.createCart)
-	mux.HandleFunc("GET /api/v1/cart/{userId}/{cartId}", h.getCart)
-	mux.HandleFunc("GET /api/v1/cart/all/{userId}", h.getAllCarts)
-
+	router.HandleFunc("POST /api/v1/cart", h.createCart)
+	router.HandleFunc("GET /api/v1/cart/{userId}/{cartId}", h.getCart)
+	router.HandleFunc("GET /api/v1/cart/all/{userId}", h.getAllCarts)
 }
