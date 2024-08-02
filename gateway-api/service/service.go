@@ -3,7 +3,6 @@ package service
 import (
 	"net/http"
 
-	cartPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/cart-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/handler"
@@ -17,7 +16,6 @@ type GatewayService struct {
 	httpAddr              string
 	userClientGrpcAddr    string
 	productClientGrpcAddr string
-	cartClientGrpcAddr    string
 	logger                *zap.SugaredLogger
 }
 
@@ -25,14 +23,12 @@ func NewGatewayHttpService(
 	httpAddr string,
 	userClientGrpcAddr string,
 	productClientGrpcAddr string,
-	cartClientGrpcAddr string,
 	logger *zap.SugaredLogger,
 ) *GatewayService {
 	return &GatewayService{
 		httpAddr:              httpAddr,
 		userClientGrpcAddr:    userClientGrpcAddr,
 		productClientGrpcAddr: productClientGrpcAddr,
-		cartClientGrpcAddr:    cartClientGrpcAddr,
 		logger:                logger,
 	}
 }
@@ -44,13 +40,9 @@ func (s *GatewayService) Run() {
 	productServiceGrpcClient, productConn := s.runProductServiceGrpcClient()
 	defer productConn.Close()
 
-	cartServiceGrpcClient, cartConn := s.runCartServiceGrpcClient()
-	defer cartConn.Close()
-
 	handler := handler.NewHandler(
 		userServiceGrpcClient,
 		productServiceGrpcClient,
-		cartServiceGrpcClient,
 		s.logger,
 	)
 
@@ -82,14 +74,4 @@ func (s *GatewayService) runProductServiceGrpcClient() (productPb.ProductService
 
 	s.logger.Infof("Dialing product service at: %v", s.productClientGrpcAddr)
 	return productPb.NewProductServiceClient(conn), conn
-}
-
-func (s *GatewayService) runCartServiceGrpcClient() (cartPb.CartServiceClient, *grpc.ClientConn) {
-	conn, err := grpc.NewClient(s.cartClientGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		s.logger.Fatalf("Failed to start server: %v", err)
-	}
-
-	s.logger.Infof("Dialing cart service at: %v", s.cartClientGrpcAddr)
-	return cartPb.NewCartServiceClient(conn), conn
 }

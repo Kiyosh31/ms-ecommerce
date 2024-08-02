@@ -3,7 +3,6 @@ package handler
 import (
 	"net/http"
 
-	cartPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/cart-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"go.uber.org/zap"
@@ -12,20 +11,17 @@ import (
 type GatewayApiHandler struct {
 	userServiceClient    userPb.UserServiceClient
 	productServiceClient productPb.ProductServiceClient
-	cartProductClient    cartPb.CartServiceClient
 	logger               *zap.SugaredLogger
 }
 
 func NewHandler(
 	userServiceClient userPb.UserServiceClient,
 	productServiceClient productPb.ProductServiceClient,
-	cartProductClient cartPb.CartServiceClient,
 	logger *zap.SugaredLogger,
 ) *GatewayApiHandler {
 	return &GatewayApiHandler{
 		userServiceClient:    userServiceClient,
 		productServiceClient: productServiceClient,
-		cartProductClient:    cartProductClient,
 		logger:               logger,
 	}
 }
@@ -44,9 +40,4 @@ func (h *GatewayApiHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /api/v1/product/all", h.getAllProducts)
 	router.HandleFunc("PUT /api/v1/product/{productId}", h.updateProduct)
 	router.HandleFunc("DELETE /api/v1/product/{productId}", h.deleteProduct)
-
-	// Cart endpoints
-	router.HandleFunc("POST /api/v1/cart", h.createCart)
-	router.HandleFunc("GET /api/v1/cart/{userId}/{cartId}", h.getCart)
-	router.HandleFunc("GET /api/v1/cart/all/{userId}", h.getAllCarts)
 }

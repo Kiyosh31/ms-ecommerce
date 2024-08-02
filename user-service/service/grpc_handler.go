@@ -22,13 +22,13 @@ func (s *UserService) CreateUser(ctx context.Context, in *userPb.CreateUserReque
 		return &userPb.Response{}, err
 	}
 
-	foundedUser, err := s.UserStore.GetOneByEmail(ctx, in.GetUser().GetEmail())
+	exists, err := s.UserStore.UserExists(ctx, in.GetUser().GetEmail())
 	if err != nil {
-		s.logger.Errorf("error searching for existing user: %v", err)
+		s.logger.Errorf("error finding existing user: %v", err)
 		return &userPb.Response{}, err
 	}
-	if !reflect.DeepEqual(foundedUser, user_types.UserSchema{}) {
-		s.logger.Error("user already exists")
+	if exists {
+		s.logger.Errorf("error user exists: %v", err)
 		return &userPb.Response{}, errors.New("user already exists")
 	}
 
@@ -76,20 +76,14 @@ func (s *UserService) GetUser(ctx context.Context, in *userPb.GetUserRequest) (*
 func (s *UserService) UpdateUser(ctx context.Context, in *userPb.UpdateUserRequest) (*userPb.Response, error) {
 	s.logger.Infof("Update user incoming request: %v", in)
 
-	userID, err := database.GetMongoId(in.GetUser().GetId())
+	exists, err := s.UserStore.UserExists(ctx, in.GetUser().GetEmail())
 	if err != nil {
-		s.logger.Errorf("error getting userId: %v", err)
+		s.logger.Errorf("error finding existing user: %v", err)
 		return &userPb.Response{}, err
 	}
-
-	foundedUser, err := s.UserStore.GetOne(ctx, userID)
-	if err != nil {
-		s.logger.Errorf("error finding user: %v", err)
-		return &userPb.Response{}, err
-	}
-	if reflect.DeepEqual(foundedUser, user_types.UserSchema{}) {
-		s.logger.Errorf("user not found: %v", err)
-		return &userPb.Response{}, errors.New(utils.NOT_FOUND)
+	if exists {
+		s.logger.Errorf("error user exists: %v", err)
+		return &userPb.Response{}, errors.New("user already exists")
 	}
 
 	userToUpdate, err := createUserSchemaDto(in.GetUser())

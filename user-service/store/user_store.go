@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Kiyosh31/ms-ecommerce/user-service/user_types"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,9 +37,6 @@ func (s *UserStore) CreateOne(ctx context.Context, user user_types.UserSchema) (
 
 	res, err := col.InsertOne(ctx, user)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &mongo.InsertOneResult{}, err
-		}
 		return &mongo.InsertOneResult{}, err
 	}
 
@@ -55,9 +53,6 @@ func (s *UserStore) GetOne(ctx context.Context, id primitive.ObjectID) (user_typ
 	var res user_types.UserSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return user_types.UserSchema{}, err
-		}
 		return user_types.UserSchema{}, err
 	}
 
@@ -74,9 +69,6 @@ func (s *UserStore) GetOneDeactivated(ctx context.Context, email string) (user_t
 	var res user_types.UserSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return user_types.UserSchema{}, err
-		}
 		return user_types.UserSchema{}, err
 	}
 
@@ -93,13 +85,29 @@ func (s *UserStore) GetOneByEmail(ctx context.Context, email string) (user_types
 	var res user_types.UserSchema
 	err := col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return user_types.UserSchema{}, err
-		}
 		return user_types.UserSchema{}, err
 	}
 
 	return res, nil
+}
+
+func (s *UserStore) UserExists(ctx context.Context, email string) (bool, error) {
+	col := s.getUserCollection()
+	filter := bson.D{
+		{Key: "email", Value: email},
+		{Key: "isActive", Value: true},
+	}
+
+	var res user_types.UserSchema
+	err := col.FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return false, nil // User not found
+		}
+		return false, err // Other error occurred
+	}
+
+	return true, nil // User found
 }
 
 func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserSchema) (*mongo.UpdateResult, error) {
@@ -109,9 +117,6 @@ func (s *UserStore) UpdateOne(ctx context.Context, userToUpdate user_types.UserS
 
 	res, err := col.UpdateOne(ctx, filter, update)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &mongo.UpdateResult{}, err
-		}
 		return &mongo.UpdateResult{}, err
 	}
 
@@ -127,9 +132,6 @@ func (s *UserStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*mong
 
 	res, err := col.DeleteOne(ctx, filter)
 	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return &mongo.DeleteResult{}, err
-		}
 		return &mongo.DeleteResult{}, err
 	}
 

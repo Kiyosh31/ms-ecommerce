@@ -12,6 +12,16 @@ service UserService {
   rpc ReactivateUser(ReactivarUserRequest) returns(Response);
 }
 
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string password = 4;
+  repeated Address addresses = 5;
+  repeated string orders = 6;
+  bool isActive = 7;
+}
+
 message Address {
   string id = 1;
   string name = 2;
@@ -20,29 +30,6 @@ message Address {
   string state = 5;
   string country = 6;
   int64 zipCode = 7;
-  bool isDefault = 8;
-}
-
-message Card {
-  string id = 1;
-  string number = 2;
-  string cardHolderName = 3;
-  string expiration = 4;
-  int32 cvv = 5;
-  string cardType = 6;
-  bool isDefault = 7;
-}
-
-message User {
-  string id = 1;
-  string firstName = 2;
-  string lastName = 3;
-  string birthDate = 4;
-  string email = 5;
-  string password = 6;
-  repeated Card cards = 7;
-  repeated Address addresses = 8;
-  bool isActive = 9;
 }
 
 message CreateUserRequest {

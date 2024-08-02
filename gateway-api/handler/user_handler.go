@@ -75,12 +75,10 @@ func (h *GatewayApiHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	res, err := h.userServiceClient.UpdateUser(r.Context(), &userPb.UpdateUserRequest{
 		User: &userPb.User{
 			Id:        userId,
-			FirstName: payload.FirstName,
-			LastName:  payload.LastName,
-			BirthDate: payload.BirthDate,
+			Name:      payload.Name,
 			Email:     payload.Email,
 			Password:  payload.Password,
-			Cards:     payload.Cards,
+			Orders:    payload.Orders,
 			Addresses: payload.Addresses,
 			IsActive:  true,
 		},

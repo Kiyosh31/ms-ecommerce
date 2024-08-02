@@ -13,46 +13,14 @@ import (
 
 func createUserPbDto(in user_types.UserSchema) userPb.User {
 	return userPb.User{
-		Id:        in.ID.Hex(),
-		FirstName: in.FirstName,
-		LastName:  in.LastName,
-		BirthDate: in.BirthDate,
-		Email:     in.Email,
-		Password:  in.Password,
-		Cards:     createCardTypeDto(in.Cards),
+		Id:       in.ID.Hex(),
+		Name:     in.Name,
+		Email:    in.Email,
+		Password: in.Password,
+		// Orders:    in.Orders,
 		Addresses: createAddressTypeDto(in.Addresses),
 		IsActive:  in.IsActive,
 	}
-}
-
-func createCardPbDto(in []*userPb.Card) ([]user_types.Card, error) {
-	var cards []user_types.Card
-
-	var mongoId primitive.ObjectID
-	var err error
-
-	for _, card := range in {
-		if card.GetId() != "" {
-			mongoId, err = database.GetMongoId(card.GetId())
-			if err != nil {
-				return []user_types.Card{}, err
-			}
-		} else {
-			mongoId = primitive.NewObjectID()
-		}
-
-		cards = append(cards, user_types.Card{
-			ID:             mongoId,
-			Number:         card.GetNumber(),
-			CardHolderName: card.GetCardHolderName(),
-			CardType:       card.GetCardType(),
-			Cvv:            card.GetCvv(),
-			Expiration:     card.GetExpiration(),
-			IsDefault:      card.GetIsDefault(),
-		})
-	}
-
-	return cards, nil
 }
 
 func createAddressPbDto(in []*userPb.Address) ([]user_types.Address, error) {
@@ -72,14 +40,13 @@ func createAddressPbDto(in []*userPb.Address) ([]user_types.Address, error) {
 		}
 
 		addresses = append(addresses, user_types.Address{
-			ID:        mongoId,
-			Name:      address.GetName(),
-			Street:    address.GetCity(),
-			City:      address.GetCity(),
-			State:     address.GetState(),
-			Country:   address.GetCountry(),
-			ZipCode:   address.GetZipCode(),
-			IsDefault: address.GetIsDefault(),
+			ID:      mongoId,
+			Name:    address.GetName(),
+			Street:  address.GetCity(),
+			City:    address.GetCity(),
+			State:   address.GetState(),
+			Country: address.GetCountry(),
+			ZipCode: address.GetZipCode(),
 		})
 	}
 
@@ -103,10 +70,7 @@ func createResponsePbDto(message string, id interface{}, in user_types.UserSchem
 		Message: message,
 		User: &userPb.User{
 			Id:        userId.Hex(),
-			FirstName: in.FirstName,
-			LastName:  in.LastName,
-			BirthDate: in.BirthDate,
-			Cards:     createCardTypeDto(in.Cards),
+			Name:      in.Name,
 			Addresses: createAddressTypeDto(in.Addresses),
 			Email:     in.Email,
 			Password:  in.Password,
@@ -115,31 +79,18 @@ func createResponsePbDto(message string, id interface{}, in user_types.UserSchem
 	}, nil
 }
 
-func createCardTypeDto(in []user_types.Card) []*userPb.Card {
-	var cards []*userPb.Card
-
-	for _, card := range in {
-		cards = append(cards, &userPb.Card{
-			Id:         card.ID.Hex(),
-			Number:     card.Number,
-			Cvv:        int32(card.Cvv),
-			Expiration: card.Expiration,
-			IsDefault:  card.IsDefault,
-		})
-	}
-
-	return cards
-}
-
 func createAddressTypeDto(in []user_types.Address) []*userPb.Address {
 	var addresses []*userPb.Address
 
 	for _, address := range in {
 		addresses = append(addresses, &userPb.Address{
-			Id:        address.ID.Hex(),
-			Name:      address.Name,
-			ZipCode:   address.ZipCode,
-			IsDefault: address.IsDefault,
+			Id:      address.ID.Hex(),
+			Street:  address.Street,
+			City:    address.City,
+			State:   address.State,
+			Country: address.Country,
+			Name:    address.Name,
+			ZipCode: address.ZipCode,
 		})
 	}
 
@@ -147,10 +98,6 @@ func createAddressTypeDto(in []user_types.Address) []*userPb.Address {
 }
 
 func createUserSchemaDto(in *userPb.User) (user_types.UserSchema, error) {
-	cards, err := createCardPbDto(in.GetCards())
-	if err != nil {
-		return user_types.UserSchema{}, err
-	}
 
 	addresses, err := createAddressPbDto(in.GetAddresses())
 	if err != nil {
@@ -172,12 +119,9 @@ func createUserSchemaDto(in *userPb.User) (user_types.UserSchema, error) {
 
 	return user_types.UserSchema{
 		ID:        userID,
-		FirstName: in.GetFirstName(),
-		LastName:  in.GetLastName(),
-		BirthDate: in.GetBirthDate(),
+		Name:      in.GetName(),
 		Email:     in.GetEmail(),
 		Password:  hashedPassword,
-		Cards:     cards,
 		Addresses: addresses,
 		IsActive:  in.GetIsActive(),
 	}, nil

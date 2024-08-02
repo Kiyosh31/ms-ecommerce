@@ -28,13 +28,3 @@ printf "\nUpdating for ./product-service..."
 cd ../product-service
 go get $REPO_URL@$LATEST_TAG
 go mod tidy
-
-printf "\nUpdating for ./cart-service..."
-cd ../cart-service
-go get $REPO_URL@$LATEST_TAG
-go mod tidy
-
-printf "\nUpdating for ./stock-service..."
-cd ../stock-service
-go get $REPO_URL@$LATEST_TAG
-go mod tidy
