@@ -15,13 +15,13 @@ type ProductSchema struct {
 }
 
 type CategorySchema struct {
-	ID             primitive.ObjectID `bson:"_id"`
-	Name           string             `bson:"name"`
-	Description    string             `bson:"description"`
-	ParentCategory primitive.ObjectID `bson:"parentCategory"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	Name        string             `bson:"name"`
+	Description string             `bson:"description"`
 }
+
 type BrandSchema struct {
-	ID          primitive.ObjectID `bson:"_id"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Name        string             `bson:"name"`
 	Description string             `bson:"description"`
 }

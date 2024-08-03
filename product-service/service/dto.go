@@ -1,8 +1,6 @@
 package service
 
 import (
-	"log"
-
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
 
 	"github.com/Kiyosh31/ms-ecommerce/product-service/product_types"
@@ -17,20 +15,17 @@ func createProductSchemaDto(in *productPb.Product) (product_types.ProductSchema,
 	if in.GetId() != "" {
 		productId, err = database.GetMongoId(in.GetId())
 		if err != nil {
-			log.Printf("err 1: %v", err)
 			return product_types.ProductSchema{}, err
 		}
 	}
 
 	category, err := createCategorySchemaDto(in.GetCategory())
 	if err != nil {
-		log.Printf("err 2: %v", err)
 		return product_types.ProductSchema{}, err
 	}
 
 	brand, err := createBrandSchema(in.GetBrand())
 	if err != nil {
-		log.Printf("err 3: %v", err)
 		return product_types.ProductSchema{}, err
 	}
 
@@ -58,16 +53,10 @@ func createCategorySchemaDto(in *productPb.Category) (product_types.CategorySche
 		}
 	}
 
-	parentCategory, err := database.GetMongoId(in.GetParentCategory())
-	if err != nil {
-		return product_types.CategorySchema{}, err
-	}
-
 	return product_types.CategorySchema{
-		ID:             categoryId,
-		Name:           in.GetName(),
-		Description:    in.GetDescription(),
-		ParentCategory: parentCategory,
+		ID:          categoryId,
+		Name:        in.GetName(),
+		Description: in.GetDescription(),
 	}, nil
 }
 
@@ -122,10 +111,9 @@ func createProductResponseDto(message string, in product_types.ProductSchema) *p
 
 func createCategoryPbDto(in product_types.CategorySchema) *productPb.Category {
 	return &productPb.Category{
-		Id:             in.ID.Hex(),
-		Name:           in.Name,
-		Description:    in.Description,
-		ParentCategory: in.ParentCategory.Hex(),
+		Id:          in.ID.Hex(),
+		Name:        in.Name,
+		Description: in.Description,
 	}
 }
 

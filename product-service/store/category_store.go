@@ -49,6 +49,21 @@ func (s *CategoryStore) GetOne(ctx context.Context, id primitive.ObjectID) (prod
 	return res, nil
 }
 
+func (s *CategoryStore) GetOneByName(ctx context.Context, categoryName string) (product_types.CategorySchema, bool, error) {
+	filter := bson.D{{Key: "name", Value: categoryName}}
+
+	var res product_types.CategorySchema
+	err := s.col.FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return res, false, nil // not found
+		}
+		return res, false, err // Other error occurred
+	}
+
+	return res, true, nil // found
+}
+
 func (s *CategoryStore) CategoryExists(ctx context.Context, id primitive.ObjectID) (product_types.CategorySchema, bool, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 
@@ -56,12 +71,12 @@ func (s *CategoryStore) CategoryExists(ctx context.Context, id primitive.ObjectI
 	err := s.col.FindOne(ctx, filter).Decode(&res)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return res, false, nil // User not found
+			return res, false, nil // not found
 		}
 		return res, false, err // Other error occurred
 	}
 
-	return res, true, nil // User found
+	return res, true, nil // found
 }
 
 func (s *CategoryStore) GetAll(ctx context.Context) ([]product_types.CategorySchema, error) {

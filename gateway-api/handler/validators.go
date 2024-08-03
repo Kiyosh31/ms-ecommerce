@@ -96,36 +96,15 @@ func validateProductPayload(payload *productPb.Product) []error {
 	if payload.GetCategory() == nil {
 		errs = append(errs, errors.New("missing category"))
 	} else {
-		if payload.GetCategory().GetId() == "" {
-			errs = append(errs, errors.New("category: Missing category id"))
-		}
-		if payload.GetCategory().GetName() == "" {
-			errs = append(errs, errors.New("category: Missing name"))
-		}
-
-		if payload.GetCategory().GetDescription() == "" {
-			errs = append(errs, errors.New("category: Missing description"))
-		}
-
-		if payload.GetCategory().GetParentCategory() == "" {
-			errs = append(errs, errors.New("category: Missing parentCategory"))
-		}
+		categoryErrors := validateCategoryPayload(payload.GetCategory())
+		errs = append(errs, categoryErrors...)
 	}
 
 	if payload.GetBrand() == nil {
 		errs = append(errs, errors.New("missing brand"))
 	} else {
-		if payload.GetBrand().GetId() == "" {
-			errs = append(errs, errors.New("brand: Missing brand id"))
-		}
-
-		if payload.GetBrand().GetName() == "" {
-			errs = append(errs, errors.New("brand: Missing name"))
-		}
-
-		if payload.GetBrand().GetDescription() == "" {
-			errs = append(errs, errors.New("brand: Missing description"))
-		}
+		brandErrors := validateBrandPayload(payload.GetBrand())
+		errs = append(errs, brandErrors...)
 	}
 
 	if payload.GetImages() == nil {
@@ -135,21 +114,69 @@ func validateProductPayload(payload *productPb.Product) []error {
 	if payload.GetAttributes() == nil {
 		errs = append(errs, errors.New("missing attributes"))
 	} else {
-		if payload.GetAttributes().GetSize() == 0 {
-			errs = append(errs, errors.New("attributes: missing size"))
-		}
-
-		if payload.GetAttributes().GetColor() == "" {
-			errs = append(errs, errors.New("attributes: missing color"))
-		}
-
-		if payload.GetAttributes().GetMaterial() == "" {
-			errs = append(errs, errors.New("attributes: missing material"))
-		}
+		attrErrors := validateAttributesPayload(payload.GetAttributes())
+		errs = append(errs, attrErrors...)
 	}
 
 	if payload.GetInventory() == nil {
 		errs = append(errs, errors.New("missing inventory"))
+	}
+
+	return errs
+}
+
+// category
+func validateCategoryPayload(payload *productPb.Category) []error {
+	var errs []error
+
+	// if payload.GetId() == "" {
+	// 	errs = append(errs, errors.New("category: Missing category id"))
+	// }
+
+	if payload.GetName() == "" {
+		errs = append(errs, errors.New("category: Missing name"))
+	}
+
+	if payload.GetDescription() == "" {
+		errs = append(errs, errors.New("category: Missing description"))
+	}
+
+	return errs
+}
+
+// brand
+func validateBrandPayload(payload *productPb.Brand) []error {
+	var errs []error
+
+	if payload.GetId() == "" {
+		errs = append(errs, errors.New("brand: Missing brand id"))
+	}
+
+	if payload.GetName() == "" {
+		errs = append(errs, errors.New("brand: Missing name"))
+	}
+
+	if payload.GetDescription() == "" {
+		errs = append(errs, errors.New("brand: Missing description"))
+	}
+
+	return errs
+}
+
+// attributes
+func validateAttributesPayload(payload *productPb.Attributes) []error {
+	var errs []error
+
+	if payload.GetSize() == 0 {
+		errs = append(errs, errors.New("attributes: missing size"))
+	}
+
+	if payload.GetColor() == "" {
+		errs = append(errs, errors.New("attributes: missing color"))
+	}
+
+	if payload.GetMaterial() == "" {
+		errs = append(errs, errors.New("attributes: missing material"))
 	}
 
 	return errs
