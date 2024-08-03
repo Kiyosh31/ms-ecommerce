@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/Kiyosh31/ms-ecommerce-common/database"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -52,16 +54,88 @@ func (s *ProductService) CreateCategory(ctx context.Context, in *productPb.Categ
 }
 
 func (s *ProductService) GetCategory(ctx context.Context, in *productPb.CategoryRequest) (*productPb.CategoryResponse, error) {
-	return &productPb.CategoryResponse{}, nil
+	s.logger.Info("get category incoming request: %v", in)
 
+	categoryId, err := database.GetMongoId(in.GetCategoryId())
+	if err != nil {
+		return &productPb.CategoryResponse{}, err
+	}
+
+	// searching in db
+	res, err := s.CategoryStore.GetOne(ctx, categoryId)
+	if err != nil {
+		s.logger.Errorf("error getting category: %v", err)
+		return &productPb.CategoryResponse{}, err
+	}
+
+	// return response
+	s.logger.Infof("get category request finished: %v", res)
+	return &productPb.CategoryResponse{
+		Message:  "Category found!",
+		Category: []*productPb.Category{createCategoryPbDto(res)},
+	}, nil
 }
 
 func (s *ProductService) UpdateCategory(ctx context.Context, in *productPb.CategoryRequest) (*productPb.CategoryResponse, error) {
-	return &productPb.CategoryResponse{}, nil
+	s.logger.Info("update category incoming request: %v", in)
 
+	categoryId, err := database.GetMongoId(in.GetCategoryId())
+	if err != nil {
+		return &productPb.CategoryResponse{}, err
+	}
+
+	_, exists, err := s.CategoryStore.CategoryExists(ctx, categoryId)
+	if err != nil {
+		s.logger.Errorf("error finding existing category: %v", err)
+		return &productPb.CategoryResponse{}, err
+	}
+	if !exists {
+		s.logger.Errorf("error category not exists: %v", errors.New("error category not exists"))
+		return &productPb.CategoryResponse{}, err
+	}
+	in.GetCategory().Id = categoryId.Hex()
+
+	// map new info
+	categoryToUpdate, err := createCategorySchemaDto(in.GetCategory())
+	if err != nil {
+		s.logger.Errorf("error creating category schema: %v", err)
+		return &productPb.CategoryResponse{}, err
+	}
+
+	// update category in DB
+	updatedCategory, err := s.CategoryStore.UpdateOne(ctx, categoryToUpdate)
+	if err != nil {
+		s.logger.Errorf("error updating category in db: %v", err)
+		return &productPb.CategoryResponse{}, nil
+	}
+
+	// return response
+	s.logger.Infof("update category request finished: %v", updatedCategory)
+	res := createCategoryPbDto(categoryToUpdate)
+	return &productPb.CategoryResponse{
+		Message:  "category updated successfully",
+		Category: []*productPb.Category{res},
+	}, nil
 }
 
 func (s *ProductService) DeleteCategory(ctx context.Context, in *productPb.CategoryRequest) (*productPb.CategoryResponse, error) {
-	return &productPb.CategoryResponse{}, nil
+	s.logger.Infof("delete user request incoming: %v", in)
 
+	categoryId, err := database.GetMongoId(in.GetCategoryId())
+	if err != nil {
+		return &productPb.CategoryResponse{}, err
+	}
+
+	res, err := s.CategoryStore.DeleteOne(ctx, categoryId)
+	if err != nil {
+		s.logger.Errorf("error deleting category: %v", err)
+		return &productPb.CategoryResponse{}, err
+	}
+
+	// return response
+	s.logger.Infof("category delete request finished: %v", res)
+	return &productPb.CategoryResponse{
+		Message:  "category deleted successfully",
+		Category: []*productPb.Category{},
+	}, nil
 }

@@ -109,5 +109,11 @@ func (s *ProductStore) DeleteOne(ctx context.Context, id primitive.ObjectID) (*m
 		return &mongo.DeleteResult{}, err
 	}
 
+	// Check if a document was actually deleted
+	if res.DeletedCount == 0 {
+		// Handle the case where no document was found
+		return nil, errors.New("document not found")
+	}
+
 	return res, nil
 }

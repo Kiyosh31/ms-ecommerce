@@ -136,7 +136,7 @@ func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.Produc
 	}
 	if !exists {
 		s.logger.Errorf("error product dont exists: %v", err)
-		return &productPb.ProductResponse{}, errors.New("user already exists")
+		return &productPb.ProductResponse{}, errors.New("product not exist")
 	}
 
 	productToUpdate, err := createProductSchemaDto(in.GetProduct())
@@ -173,7 +173,7 @@ func (s *ProductService) DeleteProduct(ctx context.Context, in *productPb.Produc
 	}
 	if !exists {
 		s.logger.Errorf("error product dont exists: %v", err)
-		return &productPb.ProductResponse{}, errors.New("user already exists")
+		return &productPb.ProductResponse{}, errors.New("product not exist")
 	}
 
 	_, err = s.ProductStore.DeleteOne(ctx, productId)
