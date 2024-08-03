@@ -78,7 +78,7 @@ message CategoryResponse {
 // Brand
 message BrandRequest {
   optional string brandId = 1;
-  optional Category brand = 2;
+  optional Brand brand = 2;
 }
 
 message BrandResponse {
