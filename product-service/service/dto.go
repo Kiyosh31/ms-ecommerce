@@ -24,7 +24,7 @@ func createProductSchemaDto(in *productPb.Product) (product_types.ProductSchema,
 		return product_types.ProductSchema{}, err
 	}
 
-	brand, err := createBrandSchema(in.GetBrand())
+	brand, err := createBrandSchemaDto(in.GetBrand())
 	if err != nil {
 		return product_types.ProductSchema{}, err
 	}
@@ -60,7 +60,7 @@ func createCategorySchemaDto(in *productPb.Category) (product_types.CategorySche
 	}, nil
 }
 
-func createBrandSchema(in *productPb.Brand) (product_types.BrandSchema, error) {
+func createBrandSchemaDto(in *productPb.Brand) (product_types.BrandSchema, error) {
 	var brandId primitive.ObjectID
 	var err error
 

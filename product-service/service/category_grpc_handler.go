@@ -20,7 +20,7 @@ func (s *ProductService) CreateCategory(ctx context.Context, in *productPb.Categ
 	}
 	if exists {
 		s.logger.Errorf("error category already exists: %v", err)
-		return &productPb.CategoryResponse{}, err
+		return &productPb.CategoryResponse{}, errors.New("category already exists")
 	}
 
 	// create schema for DB
@@ -91,7 +91,7 @@ func (s *ProductService) UpdateCategory(ctx context.Context, in *productPb.Categ
 	}
 	if !exists {
 		s.logger.Errorf("error category not exists: %v", errors.New("error category not exists"))
-		return &productPb.CategoryResponse{}, err
+		return &productPb.CategoryResponse{}, errors.New("category not found")
 	}
 	in.GetCategory().Id = categoryId.Hex()
 
@@ -119,7 +119,7 @@ func (s *ProductService) UpdateCategory(ctx context.Context, in *productPb.Categ
 }
 
 func (s *ProductService) DeleteCategory(ctx context.Context, in *productPb.CategoryRequest) (*productPb.CategoryResponse, error) {
-	s.logger.Infof("delete user request incoming: %v", in)
+	s.logger.Infof("delete category request incoming: %v", in)
 
 	categoryId, err := database.GetMongoId(in.GetCategoryId())
 	if err != nil {

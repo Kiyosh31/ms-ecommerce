@@ -49,6 +49,21 @@ func (s *BrandStore) GetOne(ctx context.Context, id primitive.ObjectID) (product
 	return res, nil
 }
 
+func (s *BrandStore) GetOneByName(ctx context.Context, brandName string) (product_types.BrandSchema, bool, error) {
+	filter := bson.D{{Key: "name", Value: brandName}}
+
+	var res product_types.BrandSchema
+	err := s.col.FindOne(ctx, filter).Decode(&res)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return res, false, nil // not found
+		}
+		return res, false, err // Other error occurred
+	}
+
+	return res, true, nil // found
+}
+
 func (s *BrandStore) BrandExists(ctx context.Context, id primitive.ObjectID) (product_types.BrandSchema, bool, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 

@@ -144,10 +144,6 @@ func validateCategoryPayload(payload *productPb.Category) []error {
 func validateBrandPayload(payload *productPb.Brand) []error {
 	var errs []error
 
-	if payload.GetId() == "" {
-		errs = append(errs, errors.New("brand: Missing brand id"))
-	}
-
 	if payload.GetName() == "" {
 		errs = append(errs, errors.New("brand: Missing name"))
 	}

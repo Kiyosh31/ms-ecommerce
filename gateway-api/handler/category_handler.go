@@ -77,7 +77,6 @@ func (h *GatewayApiHandler) updateCategory(w http.ResponseWriter, r *http.Reques
 		CategoryId: &categoryId,
 		Category:   &payload,
 	})
-	h.logger.Infof("aqui: %v", err)
 	if err != nil {
 		h.logger.Errorf("failed to update category: %v", err)
 		utils.WriteRpcError(err, w)
