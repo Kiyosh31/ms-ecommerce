@@ -32,8 +32,21 @@ product:
 	@cp $(PRODUCT_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)/product-service
 
 
+
+INVENTORY_PROTO_PATH=./inventory-service/proto/inventory-service.proto
+INVENTORY_PROTO_OUT_DIR=./inventory-service/proto/
+
+inventory:
+	@protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		$(INVENTORY_PROTO_PATH)
+	@rm -rf $(GATEWAY_API_OUT_DIR)/inventory-service
+	@mkdir $(GATEWAY_API_OUT_DIR)/inventory-service
+	@cp $(INVENTORY_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)/inventory-service
+
+
 # Clean docker
-IMAGE_NAMES := gateway-api user-service product-service rabbitmq
+IMAGE_NAMES := gateway-api user-service product-service inventory-service rabbitmq
 
 clean:
 	@for image in $(IMAGE_NAMES); do \

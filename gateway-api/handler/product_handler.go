@@ -95,7 +95,7 @@ func (h *GatewayApiHandler) updateProduct(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	h.logger.Infof("update request input finished: %v", res)
+	h.logger.Infof("update product request finished: %v", res)
 	utils.WriteResponse(w, http.StatusOK, res)
 }
 

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package="github.com/Kiyosh31/ms-ecommerce/inventory-service/inventoryPb";
+
+package inventoryPb;
+
+service InventoryService {
+  rpc CreateInventory(InventoryRequest) returns (InventoryResponse);
+  rpc GetInventory(InventoryRequest) returns (InventoryResponse);
+  rpc UpdateInventory(InventoryRequest) returns (InventoryResponse);
+  rpc DeleteInventory(InventoryRequest) returns (InventoryResponse);
+}
+
+message Inventory {
+  string id = 1;
+  string productId = 2;
+  int64 quantity = 3;
+  string location = 4;
+}
+
+message InventoryRequest {
+  optional string inventoryId = 1;
+  optional Inventory inventory = 2;
+}
+
+message InventoryResponse {
+  string message = 1;
+  repeated Inventory inventory = 2;
+}

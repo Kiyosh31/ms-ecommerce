@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 
+	inventoryPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/inventory-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 )
@@ -169,6 +170,25 @@ func validateAttributesPayload(payload *productPb.Attributes) []error {
 
 	if payload.GetMaterial() == "" {
 		errs = append(errs, errors.New("attributes: missing material"))
+	}
+
+	return errs
+}
+
+// inventory service
+func validateInventoryPayload(payload *inventoryPb.Inventory) []error {
+	var errs []error
+
+	if payload.GetProductId() == "" {
+		errs = append(errs, errors.New("missing productId"))
+	}
+
+	if payload.GetLocation() == "" {
+		errs = append(errs, errors.New("missing location"))
+	}
+
+	if payload.GetQuantity() == 0 {
+		errs = append(errs, errors.New("missing quantity"))
 	}
 
 	return errs

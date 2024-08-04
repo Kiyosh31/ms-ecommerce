@@ -46,4 +46,4 @@ Have installed:
 
 # Documentation
 
-Yo can find the `Postman` collection and some other documents on this repo's wiki once i finished the development
+Yo can find the `Postman` collection, design docs and some other documents on this repo's wiki once i finished the development

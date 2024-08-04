@@ -3,6 +3,7 @@ package service
 import (
 	"net/http"
 
+	inventoryPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/inventory-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/handler"
@@ -13,23 +14,26 @@ import (
 )
 
 type GatewayService struct {
-	httpAddr              string
-	userClientGrpcAddr    string
-	productClientGrpcAddr string
-	logger                *zap.SugaredLogger
+	httpAddr                string
+	userClientGrpcAddr      string
+	productClientGrpcAddr   string
+	inventoryClientGrpcAddr string
+	logger                  *zap.SugaredLogger
 }
 
 func NewGatewayHttpService(
 	httpAddr string,
 	userClientGrpcAddr string,
 	productClientGrpcAddr string,
+	inventoryClientGrpcAddr string,
 	logger *zap.SugaredLogger,
 ) *GatewayService {
 	return &GatewayService{
-		httpAddr:              httpAddr,
-		userClientGrpcAddr:    userClientGrpcAddr,
-		productClientGrpcAddr: productClientGrpcAddr,
-		logger:                logger,
+		httpAddr:                httpAddr,
+		userClientGrpcAddr:      userClientGrpcAddr,
+		productClientGrpcAddr:   productClientGrpcAddr,
+		inventoryClientGrpcAddr: inventoryClientGrpcAddr,
+		logger:                  logger,
 	}
 }
 
@@ -40,9 +44,13 @@ func (s *GatewayService) Run() {
 	productServiceGrpcClient, productConn := s.runProductServiceGrpcClient()
 	defer productConn.Close()
 
+	inventoryServiceGrpcClient, inventoryConn := s.runInventoryServiceGrpcClient()
+	defer inventoryConn.Close()
+
 	handler := handler.NewHandler(
 		userServiceGrpcClient,
 		productServiceGrpcClient,
+		inventoryServiceGrpcClient,
 		s.logger,
 	)
 
@@ -74,4 +82,14 @@ func (s *GatewayService) runProductServiceGrpcClient() (productPb.ProductService
 
 	s.logger.Infof("Dialing product service at: %v", s.productClientGrpcAddr)
 	return productPb.NewProductServiceClient(conn), conn
+}
+
+func (s *GatewayService) runInventoryServiceGrpcClient() (inventoryPb.InventoryServiceClient, *grpc.ClientConn) {
+	conn, err := grpc.NewClient(s.inventoryClientGrpcAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		s.logger.Fatalf("Failed to start server: %v", err)
+	}
+
+	s.logger.Infof("Dialing product service at: %v", s.inventoryClientGrpcAddr)
+	return inventoryPb.NewInventoryServiceClient(conn), conn
 }

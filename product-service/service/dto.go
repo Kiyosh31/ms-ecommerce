@@ -94,7 +94,7 @@ func createProductResponseDto(message string, in product_types.ProductSchema) *p
 	return &productPb.ProductResponse{
 		Message: message,
 		Product: []*productPb.Product{
-			&productPb.Product{
+			{
 				Id:          in.ID.Hex(),
 				Name:        in.Name,
 				Description: in.Description,

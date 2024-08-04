@@ -4,11 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"reflect"
 
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
-	"github.com/Kiyosh31/ms-ecommerce-common/utils"
-	"github.com/Kiyosh31/ms-ecommerce/product-service/product_types"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/proto"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -89,14 +86,14 @@ func (s *ProductService) GetProduct(ctx context.Context, in *productPb.ProductRe
 		return &productPb.ProductResponse{}, err
 	}
 
-	productFounded, err := s.ProductStore.GetOne(ctx, productId)
+	productFounded, exists, err := s.ProductStore.ProductExists(ctx, productId)
 	if err != nil {
-		s.logger.Errorf("error finding product: %v", err)
+		s.logger.Errorf("error finding existing product: %v", err)
 		return &productPb.ProductResponse{}, err
 	}
-	if reflect.DeepEqual(productFounded, product_types.ProductSchema{}) {
-		s.logger.Errorf("error existing product: %v", err)
-		return &productPb.ProductResponse{}, errors.New(utils.NOT_FOUND)
+	if !exists {
+		s.logger.Errorf("error product not exists: %v", err)
+		return &productPb.ProductResponse{}, errors.New("product not exists")
 	}
 
 	res := createProductResponseDto("Product founded", productFounded)

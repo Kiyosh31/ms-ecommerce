@@ -10,7 +10,6 @@ type EnvVars struct {
 	PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION string
 	PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION     string
 	RABBITMQ_MESSAGING_ACCESS_ADDR                 string
-	PRODUCT_SERVICE_QUEUE_NAME                     string
 }
 
 func LoadEnvVars() (EnvVars, error) {
@@ -49,11 +48,6 @@ func LoadEnvVars() (EnvVars, error) {
 		return EnvVars{}, err
 	}
 
-	PRODUCT_SERVICE_QUEUE_NAME, err := utils.GetEnvVar("PRODUCT_SERVICE_QUEUE_NAME")
-	if err != nil {
-		return EnvVars{}, err
-	}
-
 	return EnvVars{
 		PRODUCT_SERVICE_GRPC_ADDR:                      PRODUCT_SERVICE_GRPC_ADDR,
 		DB_CONNECTION_LINK:                             DB_CONNECTION_LINK,
@@ -62,6 +56,5 @@ func LoadEnvVars() (EnvVars, error) {
 		PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION: PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION,
 		PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION:     PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION,
 		RABBITMQ_MESSAGING_ACCESS_ADDR:                 RABBITMQ_MESSAGING_ACCESS_ADDR,
-		PRODUCT_SERVICE_QUEUE_NAME:                     PRODUCT_SERVICE_QUEUE_NAME,
 	}, nil
 }

@@ -56,11 +56,6 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: RABBITMQ_MESSAGING_ACCESS_ADDR
-            - name: PRODUCT_SERVICE_QUEUE_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: secrets
-                  key: PRODUCT_SERVICE_QUEUE_NAME
 ---
 apiVersion: v1
 kind: Service
