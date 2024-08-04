@@ -19,22 +19,27 @@ cd ./gateway-api
 go get $REPO_URL@$LATEST_TAG
 go mod tidy
 
-printf "\nUpdating for ./user-service..."
+printf "\nUpdating for /user-service..."
 cd ../user-service
 go get $REPO_URL@$LATEST_TAG
 go mod tidy
 
-printf "\nUpdating for ./product-service..."
+printf "\nUpdating for /product-service..."
 cd ../product-service
 go get $REPO_URL@$LATEST_TAG
 go mod tidy
 
-printf "\nUpdating for ./inventory-service..."
+printf "\nUpdating for /inventory-service..."
 cd ../inventory-service
 go get $REPO_URL@$LATEST_TAG
 go mod tidy
 
-printf "\nUpdating for ./order-service..."
+printf "\nUpdating for /order-service..."
 cd ../order-service
+go get $REPO_URL@$LATEST_TAG
+go mod tidy
+
+printf "\nUpdating for /payment-service..."
+cd ../payment-service
 go get $REPO_URL@$LATEST_TAG
 go mod tidy

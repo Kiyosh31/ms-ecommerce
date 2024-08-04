@@ -5,17 +5,19 @@ import (
 
 	inventoryPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/inventory-service"
 	orderPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/order-service"
+	paymentPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/payment-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"go.uber.org/zap"
 )
 
 type GatewayApiHandler struct {
-	userServiceClient      userPb.UserServiceClient
-	productServiceClient   productPb.ProductServiceClient
-	inventoryServiceClient inventoryPb.InventoryServiceClient
-	orderServiceGrpcClient orderPb.OrderServiceClient
-	logger                 *zap.SugaredLogger
+	userServiceClient        userPb.UserServiceClient
+	productServiceClient     productPb.ProductServiceClient
+	inventoryServiceClient   inventoryPb.InventoryServiceClient
+	orderServiceGrpcClient   orderPb.OrderServiceClient
+	paymentServiceGrpcClient paymentPb.PaymentServiceClient
+	logger                   *zap.SugaredLogger
 }
 
 func NewHandler(
@@ -23,14 +25,16 @@ func NewHandler(
 	productServiceClient productPb.ProductServiceClient,
 	inventoryServiceClient inventoryPb.InventoryServiceClient,
 	orderServiceGrpcClient orderPb.OrderServiceClient,
+	paymentServiceGrpcClient paymentPb.PaymentServiceClient,
 	logger *zap.SugaredLogger,
 ) *GatewayApiHandler {
 	return &GatewayApiHandler{
-		userServiceClient:      userServiceClient,
-		productServiceClient:   productServiceClient,
-		inventoryServiceClient: inventoryServiceClient,
-		orderServiceGrpcClient: orderServiceGrpcClient,
-		logger:                 logger,
+		userServiceClient:        userServiceClient,
+		productServiceClient:     productServiceClient,
+		inventoryServiceClient:   inventoryServiceClient,
+		orderServiceGrpcClient:   orderServiceGrpcClient,
+		paymentServiceGrpcClient: paymentServiceGrpcClient,
+		logger:                   logger,
 	}
 }
 
@@ -70,4 +74,7 @@ func (h *GatewayApiHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /api/v1/order", h.createOrder)
 	router.HandleFunc("GET /api/v1/order/{orderId}", h.getOrder)
 	router.HandleFunc("POST /api/v1/order/{orderId}/cancel", h.cancelOrder)
+
+	// payment endpoints
+	router.HandleFunc("POST /api/v1/payment", h.createPayment)
 }

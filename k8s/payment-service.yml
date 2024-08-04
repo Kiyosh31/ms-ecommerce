@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+        - name: payment
+          image: payment-service
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+          env:
+            - name: PAYMENT_SERVICE_GRPC_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PAYMENT_SERVICE_GRPC_ADDR
+            - name: DB_CONNECTION_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: DB_CONNECTION_LINK
+            - name: PAYMENT_SERVICE_DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PAYMENT_SERVICE_DATABASE_NAME
+            - name: PAYMENT_SERVICE_DATABASE_COLLECTION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: PAYMENT_SERVICE_DATABASE_COLLECTION
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: payment
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 3005
+      targetPort: 3005

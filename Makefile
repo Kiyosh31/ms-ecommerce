@@ -58,8 +58,21 @@ order:
 	@cp $(ORDER_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)/order-service
 
 
+
+PAYMENT_PROTO_PATH=./payment-service/proto/payment-service.proto
+PAYMENT_PROTO_OUT_DIR=./payment-service/proto/
+
+payment:
+	@protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+		$(PAYMENT_PROTO_PATH)
+	@rm -rf $(GATEWAY_API_OUT_DIR)/payment-service
+	@mkdir $(GATEWAY_API_OUT_DIR)/payment-service
+	@cp $(PAYMENT_PROTO_OUT_DIR)*.pb.go $(GATEWAY_API_OUT_DIR)/payment-service
+
+
 # Clean docker
-IMAGE_NAMES := gateway-api user-service product-service inventory-service order-service rabbitmq
+IMAGE_NAMES := gateway-api user-service product-service inventory-service order-service payment-service rabbitmq
 
 clean:
 	@for image in $(IMAGE_NAMES); do \

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package="github.com/Kiyosh31/ms-ecommerce/payment-service/paymentPb";
+
+package paymentPb;
+
+service PaymentService {
+  rpc CreatePayment(PaymentRequest) returns (PaymentResponse);
+}
+
+message Payment{
+  string id = 1;
+  string orderId = 2;
+  string userId = 3;
+  float amount = 4;
+  string paymentMethod = 5;
+  string status = 6;
+  string transactionId = 7;
+}
+
+message PaymentRequest{
+  optional string paymentId = 1;
+  optional Payment payment = 2;
+}
+
+message PaymentResponse{
+  string message = 1;
+  repeated Payment payment = 2;
+}

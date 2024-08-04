@@ -5,6 +5,7 @@ import (
 
 	inventoryPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/inventory-service"
 	orderPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/order-service"
+	paymentPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/payment-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/handler"
@@ -20,6 +21,7 @@ type GatewayService struct {
 	productClientGrpcAddr   string
 	inventoryClientGrpcAddr string
 	orderClientGrpcAdd      string
+	paymentClientGrpcAdd    string
 	logger                  *zap.SugaredLogger
 }
 
@@ -29,6 +31,7 @@ func NewGatewayHttpService(
 	productClientGrpcAddr string,
 	inventoryClientGrpcAddr string,
 	orderClientGrpcAdd string,
+	paymentClientGrpcAdd string,
 	logger *zap.SugaredLogger,
 ) *GatewayService {
 	return &GatewayService{
@@ -37,6 +40,7 @@ func NewGatewayHttpService(
 		productClientGrpcAddr:   productClientGrpcAddr,
 		inventoryClientGrpcAddr: inventoryClientGrpcAddr,
 		orderClientGrpcAdd:      orderClientGrpcAdd,
+		paymentClientGrpcAdd:    paymentClientGrpcAdd,
 		logger:                  logger,
 	}
 }
@@ -54,11 +58,15 @@ func (s *GatewayService) Run() {
 	orderServiceGrpcClient, orderConn := s.runOrderServiceGrpcClient()
 	defer orderConn.Close()
 
+	paymentServiceGrpcClient, paymentConn := s.runPaymentServiceGrpcClient()
+	defer paymentConn.Close()
+
 	handler := handler.NewHandler(
 		userServiceGrpcClient,
 		productServiceGrpcClient,
 		inventoryServiceGrpcClient,
 		orderServiceGrpcClient,
+		paymentServiceGrpcClient,
 		s.logger,
 	)
 
@@ -110,4 +118,14 @@ func (s *GatewayService) runOrderServiceGrpcClient() (orderPb.OrderServiceClient
 
 	s.logger.Infof("Dialing product service at: %v", s.orderClientGrpcAdd)
 	return orderPb.NewOrderServiceClient(conn), conn
+}
+
+func (s *GatewayService) runPaymentServiceGrpcClient() (paymentPb.PaymentServiceClient, *grpc.ClientConn) {
+	conn, err := grpc.NewClient(s.paymentClientGrpcAdd, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		s.logger.Fatalf("Failed to start server: %v", err)
+	}
+
+	s.logger.Infof("Dialing product service at: %v", s.paymentClientGrpcAdd)
+	return paymentPb.NewPaymentServiceClient(conn), conn
 }
