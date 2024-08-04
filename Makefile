@@ -80,3 +80,5 @@ clean:
 		docker images | grep "$$image" | awk '{print $$3}' | xargs -r docker rmi -f || true; \
 	done
 	@echo "Docker images deleted."
+	@echo "flushing Docker..."
+	@docker system prune -f
