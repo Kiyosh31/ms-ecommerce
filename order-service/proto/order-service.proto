@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package="github.com/Kiyosh31/ms-ecommerce/order-service/orderPb";
+
+package orderPb;
+
+service OrderService {
+  rpc CreateOrder(OrderRequest) returns (OrderResponse);
+  rpc GetOrder(OrderRequest) returns (OrderResponse);
+  rpc CancelOrder(OrderRequest) returns (OrderResponse);
+}
+
+message Order {
+  string id = 1;
+  string customerId = 2;
+  
+  float totalAmount = 4;
+  string status = 5;
+  ShippingAddress shippindAddress = 6;
+  BillingAddress billingAddress = 7;
+  
+}
+
+message ShippingAddress {
+
+}
+
+message BillingAddress {
+
+}
+
+message OrderRequest{
+  optional string orderId = 1;
+  optional Order order = 2;
+}
+
+message OrderResponse{
+  string message = 1;
+  repeated Order order = 2;
+}
+
