@@ -33,3 +33,8 @@ printf "\nUpdating for ./inventory-service..."
 cd ../inventory-service
 go get $REPO_URL@$LATEST_TAG
 go mod tidy
+
+printf "\nUpdating for ./order-service..."
+cd ../order-service
+go get $REPO_URL@$LATEST_TAG
+go mod tidy

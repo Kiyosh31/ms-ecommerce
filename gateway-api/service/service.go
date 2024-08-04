@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	inventoryPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/inventory-service"
+	orderPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/order-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/generated/user-service"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/handler"
@@ -18,6 +19,7 @@ type GatewayService struct {
 	userClientGrpcAddr      string
 	productClientGrpcAddr   string
 	inventoryClientGrpcAddr string
+	orderClientGrpcAdd      string
 	logger                  *zap.SugaredLogger
 }
 
@@ -26,6 +28,7 @@ func NewGatewayHttpService(
 	userClientGrpcAddr string,
 	productClientGrpcAddr string,
 	inventoryClientGrpcAddr string,
+	orderClientGrpcAdd string,
 	logger *zap.SugaredLogger,
 ) *GatewayService {
 	return &GatewayService{
@@ -33,6 +36,7 @@ func NewGatewayHttpService(
 		userClientGrpcAddr:      userClientGrpcAddr,
 		productClientGrpcAddr:   productClientGrpcAddr,
 		inventoryClientGrpcAddr: inventoryClientGrpcAddr,
+		orderClientGrpcAdd:      orderClientGrpcAdd,
 		logger:                  logger,
 	}
 }
@@ -47,10 +51,14 @@ func (s *GatewayService) Run() {
 	inventoryServiceGrpcClient, inventoryConn := s.runInventoryServiceGrpcClient()
 	defer inventoryConn.Close()
 
+	orderServiceGrpcClient, orderConn := s.runOrderServiceGrpcClient()
+	defer orderConn.Close()
+
 	handler := handler.NewHandler(
 		userServiceGrpcClient,
 		productServiceGrpcClient,
 		inventoryServiceGrpcClient,
+		orderServiceGrpcClient,
 		s.logger,
 	)
 
@@ -92,4 +100,14 @@ func (s *GatewayService) runInventoryServiceGrpcClient() (inventoryPb.InventoryS
 
 	s.logger.Infof("Dialing product service at: %v", s.inventoryClientGrpcAddr)
 	return inventoryPb.NewInventoryServiceClient(conn), conn
+}
+
+func (s *GatewayService) runOrderServiceGrpcClient() (orderPb.OrderServiceClient, *grpc.ClientConn) {
+	conn, err := grpc.NewClient(s.orderClientGrpcAdd, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		s.logger.Fatalf("Failed to start server: %v", err)
+	}
+
+	s.logger.Infof("Dialing product service at: %v", s.orderClientGrpcAdd)
+	return orderPb.NewOrderServiceClient(conn), conn
 }

@@ -9,3 +9,4 @@ gateway-api/gateway-api
 inventory-service/inventory-service
 product-service/product-service
 user-service/user-service
+order-service/order-service

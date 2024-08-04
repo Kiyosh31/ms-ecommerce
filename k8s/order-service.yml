@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order
+  template:
+    metadata:
+      labels:
+        app: order
+    spec:
+      containers:
+        - name: order
+          image: order-service
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+          env:
+            - name: ORDER_SERVICE_GRPC_ADDR
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ORDER_SERVICE_GRPC_ADDR
+            - name: DB_CONNECTION_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: DB_CONNECTION_LINK
+            - name: ORDER_SERVICE_DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ORDER_SERVICE_DATABASE_NAME
+            - name: ORDER_SERVICE_DATABASE_COLLECTION
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: ORDER_SERVICE_DATABASE_COLLECTION
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: order
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 3004
+      targetPort: 3004

@@ -30,7 +30,3 @@ func createInventorySchemaDto(in *inventoryPb.Inventory) (inventory_types.Invent
 		Location:  in.GetLocation(),
 	}, nil
 }
-
-func createInventoryResponseDto() {
-
-}
