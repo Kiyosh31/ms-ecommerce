@@ -1,6 +1,6 @@
 # Overview
 
-e-commerce microservices made in `go/golang`, `docker`, `kubernetes`, `gRPC`, `RabbitMQ`, `MongoDB`, `MongoDB Atlas`.
+e-commerce microservices made in `go/golang`, `docker`, `kubernetes`, `gRPC`, `RabbitMQ`, `MongoDB`, `MongoDB Atlas`. Applying `Hexaginal Architecture`
 
 ### Common package
 
@@ -16,6 +16,7 @@ Have installed:
 - Docker desktop
 - Kubernetes
 - [gRPC and protobuf compiler](https://grpc.io/docs/languages/go/quickstart/) (just in case you want to develop new features)
+- [Skaffold](https://skaffold.dev/)
 
 ## Instructions
 
