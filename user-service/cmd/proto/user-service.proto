@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package="github.com/Kiyosh31/ms-ecommerce/user-service/userPb";
+option go_package="github.com/Kiyosh31/ms-ecommerce/user-service/cmd/userPb";
 
 package userPb;
 
@@ -8,7 +8,7 @@ service UserService {
   rpc CreateUser(UserRequest) returns (UserResponse);
   rpc GetUser(UserRequest) returns (UserResponse);
   rpc UpdateUser(UserRequest) returns (UserResponse);
-  rpc DeleteUser(UserRequest) returns (UserResponse);
+  rpc DeactivateUser(UserRequest) returns (UserResponse);
   rpc ReactivateUser(ReactivateUserRequest) returns(UserResponse);
 }
 

@@ -43,7 +43,7 @@ func (h *GatewayApiHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /api/v1/user", h.createUser)
 	router.HandleFunc("GET /api/v1/user/{userId}", h.getUser)
 	router.HandleFunc("PUT /api/v1/user/{userId}", h.updateUser)
-	router.HandleFunc("DELETE /api/v1/user/{userId}", h.deleteUser)
+	router.HandleFunc("DELETE /api/v1/user/{userId}", h.deactivateUser)
 	router.HandleFunc("POST /api/v1/user/reactivate", h.reactivateUser)
 
 	// Product endpoints

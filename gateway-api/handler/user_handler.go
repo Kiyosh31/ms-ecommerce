@@ -73,7 +73,8 @@ func (h *GatewayApiHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	res, err := h.userServiceClient.UpdateUser(r.Context(), &userPb.UserRequest{
-		User: &payload,
+		UserId: &userId,
+		User:   &payload,
 	})
 	if err != nil {
 		h.logger.Errorf("error updating user: %v", err)
@@ -85,7 +86,7 @@ func (h *GatewayApiHandler) updateUser(w http.ResponseWriter, r *http.Request) {
 	utils.WriteResponse(w, http.StatusOK, res)
 }
 
-func (h *GatewayApiHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *GatewayApiHandler) deactivateUser(w http.ResponseWriter, r *http.Request) {
 	userId := r.PathValue("userId")
 	h.logger.Info("delete user request incoming: %v", userId)
 	if userId == "" {
@@ -94,7 +95,7 @@ func (h *GatewayApiHandler) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := h.userServiceClient.DeleteUser(r.Context(), &userPb.UserRequest{
+	res, err := h.userServiceClient.DeactivateUser(r.Context(), &userPb.UserRequest{
 		UserId: &userId,
 	})
 	if err != nil {

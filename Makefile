@@ -6,8 +6,8 @@ dependency:
 	./update_common_dependency.sh
 
 # Proto
-USER_PROTO_PATH=./user-service/proto/user-service.proto
-USER_PROTO_OUT_DIR=./user-service/proto/
+USER_PROTO_PATH=./user-service/cmd/proto/user-service.proto
+USER_PROTO_OUT_DIR=./user-service/cmd/proto/
 GATEWAY_API_OUT_DIR=./gateway-api/generated
 
 user:

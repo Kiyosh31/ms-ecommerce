@@ -10,7 +10,6 @@ type envVars struct {
 }
 
 func LoadEnvVars() (envVars, error) {
-
 	USER_SERVICE_GRPC_ADDR, err := utils.GetEnvVar("USER_SERVICE_GRPC_ADDR")
 	if err != nil {
 		return envVars{}, err
