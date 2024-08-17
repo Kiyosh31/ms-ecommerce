@@ -23,7 +23,7 @@ func (h *Handler) CreateUser(ctx context.Context, in *userPb.UserRequest) (*user
 		return &userPb.UserResponse{}, nil
 	}
 
-	new_user := domain.UserSchema{
+	newUser := domain.UserSchema{
 		Name:      in.GetUser().GetName(),
 		Email:     in.GetUser().GetEmail(),
 		Password:  hashedPassword,
@@ -33,7 +33,7 @@ func (h *Handler) CreateUser(ctx context.Context, in *userPb.UserRequest) (*user
 	}
 
 	//consume service
-	res, err := h.userService.Create(ctx, new_user)
+	res, err := h.userService.Create(ctx, newUser)
 	if err != nil {
 		return &userPb.UserResponse{}, err
 	}

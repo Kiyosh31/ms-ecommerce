@@ -22,7 +22,7 @@ func (h *Handler) UpdateUser(ctx context.Context, in *userPb.UserRequest) (*user
 		return &userPb.UserResponse{}, err
 	}
 
-	user_to_update := domain.UserSchema{
+	userToUpdate := domain.UserSchema{
 		ID:        userId,
 		Name:      in.GetUser().GetName(),
 		Email:     in.GetUser().GetEmail(),
@@ -32,7 +32,7 @@ func (h *Handler) UpdateUser(ctx context.Context, in *userPb.UserRequest) (*user
 	}
 
 	//consume service
-	res, err := h.userService.Update(ctx, user_to_update)
+	res, err := h.userService.Update(ctx, userToUpdate)
 	if err != nil {
 		return &userPb.UserResponse{}, err
 	}

@@ -14,21 +14,21 @@ func (s Service) Deactivate(ctx context.Context, id string) (bool, error) {
 	}
 
 	// check is user exist
-	user_to_deactivate, exist, err := s.repository.Get(ctx, userId)
+	userToDeactivate, exist, err := s.repository.Get(ctx, userId)
 	if err != nil {
 		return false, err
 	}
 	if !exist {
 		return false, errors.New("user not found")
 	}
-	if !user_to_deactivate.IsActive {
+	if !userToDeactivate.IsActive {
 		return false, errors.New("user already deactivated")
 	}
 	// deactivating user
-	user_to_deactivate.IsActive = false
+	userToDeactivate.IsActive = false
 
 	// save to DB
-	_, err = s.repository.Update(ctx, user_to_deactivate)
+	_, err = s.repository.Update(ctx, userToDeactivate)
 	if err != nil {
 		return false, err
 	}

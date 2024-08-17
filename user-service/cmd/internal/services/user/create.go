@@ -10,11 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s Service) Create(ctx context.Context, new_user domain.UserSchema) (*userPb.User, error) {
-	s.logger.Infof("create user: %v", new_user)
+func (s Service) Create(ctx context.Context, newUser domain.UserSchema) (*userPb.User, error) {
+	s.logger.Infof("create user: %v", newUser)
 
 	// check is user exist
-	_, exist, err := s.repository.GetByEmail(ctx, new_user.Email)
+	_, exist, err := s.repository.GetByEmail(ctx, newUser.Email)
 	if err != nil {
 		s.logger.Error(err)
 		return &userPb.User{}, err
@@ -25,25 +25,25 @@ func (s Service) Create(ctx context.Context, new_user domain.UserSchema) (*userP
 		return &userPb.User{}, err
 	}
 
-	res, err := s.repository.Create(ctx, new_user)
+	res, err := s.repository.Create(ctx, newUser)
 	if err != nil {
 		s.logger.Error(err)
 		return &userPb.User{}, err
 	}
 
-	new_user_id, ok := res.InsertedID.(primitive.ObjectID)
+	newUserId, ok := res.InsertedID.(primitive.ObjectID)
 	if !ok {
 		return &userPb.User{}, errors.New("error getting new user id")
 	}
-	new_user.ID = new_user_id
+	newUser.ID = newUserId
 
-	s.logger.Infof("create user finished with: %v", new_user)
+	s.logger.Infof("create user finished with: %v", newUser)
 	return &userPb.User{
-		Id:        new_user.ID.Hex(),
-		Name:      new_user.Name,
-		Email:     new_user.Email,
-		Password:  new_user.Password,
-		Addresses: userutils.MapAddressToProto(new_user.Addresses),
+		Id:        newUser.ID.Hex(),
+		Name:      newUser.Name,
+		Email:     newUser.Email,
+		Password:  newUser.Password,
+		Addresses: userutils.MapAddressToProto(newUser.Addresses),
 		// Orders: ,
 	}, nil
 }
