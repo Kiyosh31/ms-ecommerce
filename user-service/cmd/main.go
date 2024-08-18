@@ -9,7 +9,7 @@ import (
 
 	userHandler "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/api/handlers/user"
 	"github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/config"
-	userRepo "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/repositories/user"
+	userRepo "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/repositories/mongo/user"
 	userService "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/services/user"
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/proto"
 
@@ -28,7 +28,7 @@ func main() {
 		logger.Fatalf("Could not load env var: %v", err)
 	}
 
-	grpc_server := grpc.NewServer()
+	grpcServer := grpc.NewServer()
 
 	conn, err := net.Listen("tcp", vars.USER_SERVICE_GRPC_ADDR)
 	if err != nil {
@@ -42,13 +42,13 @@ func main() {
 	}
 	defer database.DisconnectOfDB(client)
 
-	user_repository := userRepo.NewUserRepository(client, vars.USER_SERVICE_DATABASE_NAME, vars.USER_SERVICE_DATABASE_COLLECTION)
-	user_service := userService.NewUserService(*user_repository, logger)
-	user_handler := userHandler.NewUserHandler(*user_service, logger)
-	userPb.RegisterUserServiceServer(grpc_server, user_handler)
+	userRepository := userRepo.NewUserRepository(client, vars.USER_SERVICE_DATABASE_NAME, vars.USER_SERVICE_DATABASE_COLLECTION)
+	userService := userService.NewUserService(*userRepository, logger)
+	userHandler := userHandler.NewUserHandler(*userService, logger)
+	userPb.RegisterUserServiceServer(grpcServer, userHandler)
 
 	logger.Infof("gRPC server started in port: %v", vars.USER_SERVICE_GRPC_ADDR)
-	if err := grpc_server.Serve(conn); err != nil {
+	if err := grpcServer.Serve(conn); err != nil {
 		logger.Fatal(err.Error())
 	}
 }

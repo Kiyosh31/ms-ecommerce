@@ -120,7 +120,7 @@ func (s *ProductService) GetAllProducts(ctx context.Context, in *productPb.Produ
 func (s *ProductService) UpdateProduct(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
 	s.logger.Infof("Update product incoming request: %v", in)
 
-	productId, err := database.GetMongoId(in.GetProduct().GetId())
+	productId, err := database.GetMongoId(in.GetProductId())
 	if err != nil {
 		s.logger.Errorf("error getting productId: %v", err)
 		return &productPb.ProductResponse{}, err

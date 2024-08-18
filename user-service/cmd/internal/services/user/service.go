@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/ports"
-	"github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/repositories/user"
+	"github.com/Kiyosh31/ms-ecommerce/user-service/cmd/internal/repositories/mongo/user"
 	"go.uber.org/zap"
 )
 
