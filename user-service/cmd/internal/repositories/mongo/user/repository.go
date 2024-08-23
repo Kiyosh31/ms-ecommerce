@@ -3,9 +3,8 @@ package user
 import "go.mongodb.org/mongo-driver/mongo"
 
 type Repository struct {
-	client       *mongo.Client
-	databaseName string
-	collection   *mongo.Collection
+	client     *mongo.Client
+	collection *mongo.Collection
 }
 
 func NewUserRepository(
@@ -14,8 +13,7 @@ func NewUserRepository(
 	collectionName string,
 ) *Repository {
 	return &Repository{
-		client:       client,
-		databaseName: databaseName,
-		collection:   client.Database(databaseName).Collection(collectionName),
+		client:     client,
+		collection: client.Database(databaseName).Collection(collectionName),
 	}
 }

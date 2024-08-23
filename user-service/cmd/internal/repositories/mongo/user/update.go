@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r Repository) Update(ctx context.Context, user domain.UserSchema) (mongo.UpdateResult, error) {
+func (r *Repository) Update(ctx context.Context, user domain.UserSchema) (mongo.UpdateResult, error) {
 	filter := bson.D{{Key: "_id", Value: user.ID}}
 	update := bson.D{{Key: "$set", Value: user}}
 

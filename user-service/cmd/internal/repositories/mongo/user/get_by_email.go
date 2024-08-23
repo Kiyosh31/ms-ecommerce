@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r Repository) GetByEmail(ctx context.Context, email string) (domain.UserSchema, bool, error) {
+func (r *Repository) GetByEmail(ctx context.Context, email string) (domain.UserSchema, bool, error) {
 	filter := bson.D{{Key: "email", Value: email}}
 
 	var res domain.UserSchema

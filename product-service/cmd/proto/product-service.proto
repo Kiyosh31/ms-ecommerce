@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+option go_package="github.com/Kiyosh31/ms-ecommerce/product-service/cmd/productPb";
+
+package productPb;
+
+service ProductService {
+  rpc CreateProduct(ProductRequest) returns (ProductResponse);
+  rpc GetProduct(ProductRequest) returns (ProductResponse);
+  rpc UpdateProduct(ProductRequest) returns (ProductResponse);
+  rpc DeleteProduct(ProductRequest) returns (ProductResponse);
+}
+
+service CategoryService {
+  rpc CreateCategory(CategoryRequest) returns (CategoryResponse);
+  rpc GetCategory(CategoryRequest) returns (CategoryResponse);
+  rpc UpdateCategory(CategoryRequest) returns (CategoryResponse);
+  rpc DeleteCategory(CategoryRequest) returns (CategoryResponse);
+}
+
+service BrandService {
+  rpc CreateBrand(BrandRequest) returns (BrandResponse);
+  rpc GetBrand(BrandRequest) returns (BrandResponse);
+  rpc UpdateBrand(BrandRequest) returns (BrandResponse);
+  rpc DeleteBrand(BrandRequest) returns (BrandResponse);
+}
+
+message Product {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  float price = 4;
+  Category category = 5;
+  Brand brand = 6;
+  repeated string images = 7;
+  Attributes attributes = 8;
+  Inventory inventory = 9;
+}
+
+
+message Category {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message Brand {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message Attributes {
+  int64 size = 1;
+  string color = 2;
+  string material = 3;
+}
+
+message Inventory {}
+
+message ProductRequest {
+  optional string productId = 1;
+  optional Product product = 2;
+}
+
+message ProductResponse {
+  string message = 1;
+  repeated Product product = 2;
+}
+
+// Category
+message CategoryRequest {
+  optional string categoryId = 1;
+  optional Category category = 2;
+}
+
+message CategoryResponse {
+  string message = 1;
+  repeated Category category = 2;
+}
+
+// Brand
+message BrandRequest {
+  optional string brandId = 1;
+  optional Brand brand = 2;
+}
+
+message BrandResponse {
+  string message = 1;
+  repeated Brand brand = 2;
+}

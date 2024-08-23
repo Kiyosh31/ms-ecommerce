@@ -17,3 +17,11 @@ type UserService interface {
 type ProductService interface {
 	GetService() (productPb.ProductServiceClient, *grpc.ClientConn)
 }
+
+type BrandService interface {
+	GetService() (productPb.BrandServiceClient, *grpc.ClientConn)
+}
+
+type CategoryService interface {
+	GetService() (productPb.CategoryServiceClient, *grpc.ClientConn)
+}

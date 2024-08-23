@@ -13,7 +13,7 @@ type Handler struct {
 	logger      *zap.SugaredLogger
 }
 
-func NewUserHandler(userService user.Service, logger *zap.SugaredLogger) *Handler {
+func NewUserHandler(userService *user.Service, logger *zap.SugaredLogger) *Handler {
 	return &Handler{
 		userService: userService,
 		logger:      logger,

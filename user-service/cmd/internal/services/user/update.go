@@ -10,9 +10,9 @@ import (
 	userutils "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/user_utils"
 )
 
-func (s Service) Update(ctx context.Context, userToUpdate domain.UserSchema) (*userPb.User, error) {
+func (s Service) Update(ctx context.Context, user domain.UserSchema) (*userPb.User, error) {
 	// validate user exists
-	existingUser, exist, err := s.repository.Get(ctx, userToUpdate.ID)
+	existingUser, exist, err := s.repository.Get(ctx, user.ID)
 	if err != nil {
 		return &userPb.User{}, err
 	}
@@ -24,25 +24,25 @@ func (s Service) Update(ctx context.Context, userToUpdate domain.UserSchema) (*u
 	}
 
 	// hash password
-	hashedPassword, err := utils.HashPassword(userToUpdate.Password)
+	hashedPassword, err := utils.HashPassword(user.Password)
 	if err != nil {
 		return &userPb.User{}, err
 	}
-	userToUpdate.Password = hashedPassword
+	user.Password = hashedPassword
 
 	//update to db
-	_, err = s.repository.Update(ctx, userToUpdate)
+	_, err = s.repository.Update(ctx, user)
 	if err != nil {
 		return &userPb.User{}, err
 	}
 
 	// translate response
 	res := &userPb.User{
-		Id:        userToUpdate.ID.Hex(),
-		Name:      userToUpdate.Name,
-		Password:  userToUpdate.Password,
-		Email:     userToUpdate.Email,
-		Addresses: userutils.MapAddressToProto(userToUpdate.Addresses),
+		Id:        user.ID.Hex(),
+		Name:      user.Name,
+		Password:  user.Password,
+		Email:     user.Email,
+		Addresses: userutils.MapAddressToProto(user.Addresses),
 	}
 
 	return res, nil

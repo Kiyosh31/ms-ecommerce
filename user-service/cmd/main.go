@@ -43,8 +43,8 @@ func main() {
 	defer database.DisconnectOfDB(client)
 
 	userRepository := userRepo.NewUserRepository(client, vars.USER_SERVICE_DATABASE_NAME, vars.USER_SERVICE_DATABASE_COLLECTION)
-	userService := userService.NewUserService(*userRepository, logger)
-	userHandler := userHandler.NewUserHandler(*userService, logger)
+	userService := userService.NewUserService(userRepository, logger)
+	userHandler := userHandler.NewUserHandler(userService, logger)
 	userPb.RegisterUserServiceServer(grpcServer, userHandler)
 
 	logger.Infof("gRPC server started in port: %v", vars.USER_SERVICE_GRPC_ADDR)

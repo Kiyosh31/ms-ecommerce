@@ -9,7 +9,7 @@ import (
 	userutils "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/user_utils"
 )
 
-func (s Service) Get(ctx context.Context, id string) (*userPb.User, error) {
+func (s *Service) Get(ctx context.Context, id string) (*userPb.User, error) {
 	userId, err := database.GetMongoId(id)
 	if err != nil {
 		return &userPb.User{}, err

@@ -10,7 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r Repository) Get(ctx context.Context, id primitive.ObjectID) (domain.UserSchema, bool, error) {
+func (r *Repository) Get(ctx context.Context, id primitive.ObjectID) (domain.UserSchema, bool, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 
 	var res domain.UserSchema

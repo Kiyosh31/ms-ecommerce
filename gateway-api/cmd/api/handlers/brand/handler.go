@@ -6,11 +6,11 @@ import (
 )
 
 type Handler struct {
-	brandServiceClient productPb.ProductServiceClient
+	brandServiceClient productPb.BrandServiceClient
 	logger             *zap.SugaredLogger
 }
 
-func NewBrandHandler(brandServiceClient productPb.ProductServiceClient,
+func NewBrandHandler(brandServiceClient productPb.BrandServiceClient,
 	logger *zap.SugaredLogger) *Handler {
 	return &Handler{
 		brandServiceClient: brandServiceClient,

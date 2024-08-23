@@ -11,7 +11,7 @@ type Service struct {
 	logger     *zap.SugaredLogger
 }
 
-func NewUserService(repository user.Repository, logger *zap.SugaredLogger) *Service {
+func NewUserService(repository *user.Repository, logger *zap.SugaredLogger) *Service {
 	return &Service{
 		repository: repository,
 		logger:     logger,

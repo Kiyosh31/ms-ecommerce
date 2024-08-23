@@ -7,7 +7,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r Repository) Create(ctx context.Context, user domain.UserSchema) (*mongo.InsertOneResult, error) {
+func (r *Repository) Create(ctx context.Context, user domain.UserSchema) (*mongo.InsertOneResult, error) {
 	res, err := r.collection.InsertOne(ctx, user)
 	if err != nil {
 		return nil, err

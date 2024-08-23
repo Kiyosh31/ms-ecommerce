@@ -8,7 +8,7 @@ dependency:
 # Proto
 USER_PROTO_PATH=./user-service/cmd/proto/user-service.proto
 USER_PROTO_OUT_DIR=./user-service/cmd/proto/
-GATEWAY_API_OUT_DIR=./gateway-api/generated
+GATEWAY_API_OUT_DIR=./gateway-api/cmd/generated
 
 user:
 	@protoc --go_out=. --go_opt=paths=source_relative \
@@ -20,8 +20,8 @@ user:
 
 
 
-PRODUCT_PROTO_PATH=./product-service/proto/product-service.proto
-PRODUCT_PROTO_OUT_DIR=./product-service/proto/
+PRODUCT_PROTO_PATH=./product-service/cmd/proto/product-service.proto
+PRODUCT_PROTO_OUT_DIR=./product-service/cmd/proto/
 
 product:
 	@protoc --go_out=. --go_opt=paths=source_relative \

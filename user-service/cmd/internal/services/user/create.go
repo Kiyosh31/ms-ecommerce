@@ -10,11 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (s Service) Create(ctx context.Context, newUser domain.UserSchema) (*userPb.User, error) {
-	s.logger.Infof("create user: %v", newUser)
+func (s Service) Create(ctx context.Context, user domain.UserSchema) (*userPb.User, error) {
+	s.logger.Infof("create user: %v", user)
 
 	// check is user exist
-	_, exist, err := s.repository.GetByEmail(ctx, newUser.Email)
+	_, exist, err := s.repository.GetByEmail(ctx, user.Email)
 	if err != nil {
 		s.logger.Error(err)
 		return &userPb.User{}, err
@@ -25,7 +25,7 @@ func (s Service) Create(ctx context.Context, newUser domain.UserSchema) (*userPb
 		return &userPb.User{}, err
 	}
 
-	res, err := s.repository.Create(ctx, newUser)
+	res, err := s.repository.Create(ctx, user)
 	if err != nil {
 		s.logger.Error(err)
 		return &userPb.User{}, err
@@ -35,15 +35,15 @@ func (s Service) Create(ctx context.Context, newUser domain.UserSchema) (*userPb
 	if !ok {
 		return &userPb.User{}, errors.New("error getting new user id")
 	}
-	newUser.ID = newUserId
+	user.ID = newUserId
 
-	s.logger.Infof("create user finished with: %v", newUser)
+	s.logger.Infof("create user finished with: %v", user)
 	return &userPb.User{
-		Id:        newUser.ID.Hex(),
-		Name:      newUser.Name,
-		Email:     newUser.Email,
-		Password:  newUser.Password,
-		Addresses: userutils.MapAddressToProto(newUser.Addresses),
+		Id:        user.ID.Hex(),
+		Name:      user.Name,
+		Email:     user.Email,
+		Password:  user.Password,
+		Addresses: userutils.MapAddressToProto(user.Addresses),
 		// Orders: ,
 	}, nil
 }

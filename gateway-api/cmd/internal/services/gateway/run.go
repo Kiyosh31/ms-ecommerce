@@ -18,8 +18,14 @@ func (s Service) Run() {
 	productServiceClient, productServiceConn := s.productService.GetService()
 	defer productServiceConn.Close()
 	productHandler := product.NewProductHandler(productServiceClient, s.logger)
-	categoryHandler := category.NewCategoryHandler(productServiceClient, s.logger)
-	brandHandler := brand.NewBrandHandler(productServiceClient, s.logger)
+
+	categoryServiceClient, categoryServiceConn := s.categoryService.GetService()
+	defer categoryServiceConn.Close()
+	categoryHandler := category.NewCategoryHandler(categoryServiceClient, s.logger)
+
+	brandServiceClient, brandServiceConn := s.brandService.GetService()
+	brandServiceConn.Close()
+	brandHandler := brand.NewBrandHandler(brandServiceClient, s.logger)
 
 	router := http.NewServeMux()
 	gatewayHandler := gateway.NewGatewayHandler(
