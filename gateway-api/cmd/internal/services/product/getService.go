@@ -12,6 +12,6 @@ func (s Service) GetService() (productPb.ProductServiceClient, *grpc.ClientConn)
 		s.logger.Fatalf("Failed to start server: %v", err)
 	}
 
-	s.logger.Infof("Dialing user service at: %v", s.productClientGrpcAddr)
+	s.logger.Infof("Dialing product-service at: %v", s.productClientGrpcAddr)
 	return productPb.NewProductServiceClient(conn), conn
 }

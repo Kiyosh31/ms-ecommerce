@@ -7,5 +7,18 @@ import (
 )
 
 func (h *Handler) GetCategory(ctx context.Context, in *productPb.CategoryRequest) (*productPb.CategoryResponse, error) {
-	return &productPb.CategoryResponse{}, nil
+	// translate request
+	// validate request
+
+	//consume service
+	res, err := h.categoryService.Get(ctx, in.GetCategoryId())
+	if err != nil {
+		return &productPb.CategoryResponse{}, err
+	}
+
+	// translate response
+	return &productPb.CategoryResponse{
+		Message:  "Category found",
+		Category: []*productPb.Category{res},
+	}, nil
 }

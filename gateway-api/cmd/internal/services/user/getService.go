@@ -12,6 +12,6 @@ func (s Service) GetService() (userPb.UserServiceClient, *grpc.ClientConn) {
 		s.logger.Fatalf("Failed to start server: %v", err)
 	}
 
-	s.logger.Infof("Dialing user service at: %v", s.userClientGrpcAddr)
+	s.logger.Infof("Dialing user-service at: %v", s.userClientGrpcAddr)
 	return userPb.NewUserServiceClient(conn), conn
 }
