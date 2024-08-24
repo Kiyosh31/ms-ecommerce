@@ -24,7 +24,7 @@ func (s Service) Run() {
 	categoryHandler := category.NewCategoryHandler(categoryServiceClient, s.logger)
 
 	brandServiceClient, brandServiceConn := s.brandService.GetService()
-	brandServiceConn.Close()
+	defer brandServiceConn.Close()
 	brandHandler := brand.NewBrandHandler(brandServiceClient, s.logger)
 
 	router := http.NewServeMux()

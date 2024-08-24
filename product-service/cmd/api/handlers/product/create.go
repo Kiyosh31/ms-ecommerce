@@ -7,6 +7,6 @@ import (
 )
 
 func (h *Handler) CreateProduct(ctx context.Context, in *productPb.ProductRequest) (*productPb.ProductResponse, error) {
-
+	h.logger.Info("llego handler")
 	return &productPb.ProductResponse{}, nil
 }

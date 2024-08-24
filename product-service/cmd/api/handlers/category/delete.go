@@ -29,5 +29,4 @@ func (h *Handler) DeleteCategory(ctx context.Context, in *productPb.CategoryRequ
 	return &productPb.CategoryResponse{
 		Message: message,
 	}, nil
-
 }
