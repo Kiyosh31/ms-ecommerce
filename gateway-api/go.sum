@@ -1,9 +1,13 @@
-github.com/Kiyosh31/ms-ecommerce-common v1.17.8 h1:qzc5HQQoVyPiRQG+2A7fqjjQtD2kMu9DA5lBiK9ZbLA=
-github.com/Kiyosh31/ms-ecommerce-common v1.17.8/go.mod h1:v9+AvNEiDEPGrG9+AOLvawCkEFI23yBrHAthkrO1duI=
+github.com/Kiyosh31/ms-ecommerce-common v1.17.13 h1:vvEUNFgpejs1mW0J2dUKUyNwdkQHYTGe5YnzUcwTHvs=
+github.com/Kiyosh31/ms-ecommerce-common v1.17.13/go.mod h1:nerluvBCwFLP9v7aW4IXhYLC98rV2Kxrw7i9ZJjO/JI=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=
+github.com/golang-jwt/jwt/v5 v5.2.1/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=

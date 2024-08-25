@@ -1,6 +1,7 @@
 package ports
 
 import (
+	inventoryPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/generated/inventory-service"
 	productPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/generated/product-service"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/generated/user-service"
 	"google.golang.org/grpc"
@@ -24,4 +25,8 @@ type BrandService interface {
 
 type CategoryService interface {
 	GetService() (productPb.CategoryServiceClient, *grpc.ClientConn)
+}
+
+type InventoryService interface {
+	GetService() (inventoryPb.InventoryServiceClient, *grpc.ClientConn)
 }

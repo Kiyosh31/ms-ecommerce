@@ -2,38 +2,72 @@ package product
 
 import (
 	"context"
-	"errors"
 
 	"github.com/Kiyosh31/ms-ecommerce/product-service/cmd/internal/domain"
 	productPb "github.com/Kiyosh31/ms-ecommerce/product-service/cmd/proto"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (s Service) Create(ctx context.Context, product domain.ProductSchema) (*productPb.Product, error) {
-	s.logger.Infof("create product: %v", product)
+	return &productPb.Product{}, nil
+	// s.logger.Infof("Create product incoming request: %v", product)
 
-	res, err := s.repository.Create(ctx, product)
-	if err != nil {
-		s.logger.Error(err)
-		return &productPb.Product{}, err
-	}
+	// categoryId, err := database.GetMongoId(product.Category.ID.Hex())
+	// if err != nil {
+	// 	s.logger.Errorf("error getting categoryId: %v", err)
+	// 	return &productPb.Product{}, err
+	// }
 
-	id, ok := res.InsertedID.(primitive.ObjectID)
-	if !ok {
-		return &productPb.Product{}, errors.New("error getting new product id")
-	}
-	product.ID = id
+	// brandId, err := database.GetMongoId(product.Brand.ID.Hex())
+	// if err != nil {
+	// 	s.logger.Errorf("error getting brandId: %v", err)
+	// 	return &productPb.Product{}, err
+	// }
 
-	s.logger.Infof("create product finished with: %v", product)
-	return &productPb.Product{
-		Id:          product.ID.Hex(),
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-		Category:    &productPb.Category{},
-		Brand:       &productPb.Brand{},
-		Images:      product.Images,
-		Attributes:  &productPb.Attributes{},
-		Inventory:   &productPb.Inventory{},
-	}, nil
+	// // check category exists
+	// _, exists, err := s.CategoryStore.CategoryExists(ctx, categoryId)
+	// if err != nil {
+	// 	s.logger.Errorf("error finding existing category: %v", err)
+	// 	return &productPb.Product{}, err
+	// }
+	// if !exists {
+	// 	s.logger.Errorf("error category dont exists: %v", err)
+	// 	return &productPb.Product{}, errors.New("category dont exist")
+	// }
+
+	// // check brand exists
+	// _, exists, err = s.BrandStore.BrandExists(ctx, brandId)
+	// if err != nil {
+	// 	s.logger.Errorf("error finding existing brand: %v", err)
+	// 	return &productPb.Product{}, err
+	// }
+	// if !exists {
+	// 	s.logger.Errorf("error category dont exists: %v", err)
+	// 	return &productPb.Product{}, errors.New("brand dont exist")
+	// }
+
+	// // create product schema for db
+	// productDto, err := createProductSchemaDto(in.GetProduct())
+	// if err != nil {
+	// 	s.logger.Errorf("error creating schema: %v", err)
+	// 	return &productPb.Product{}, err
+	// }
+
+	// // saving product to db
+	// createdProduct, err := s.repository.Create(ctx, productDto)
+	// if err != nil {
+	// 	s.logger.Errorf("error creating product: %v", err)
+	// 	return &productPb.Product{}, err
+	// }
+
+	// // getting productID created in db
+	// id, ok := createdProduct.InsertedID.(primitive.ObjectID)
+	// if !ok {
+	// 	s.logger.Errorf("error getting id: %v", err)
+	// 	return &productPb.Product{}, fmt.Errorf("failed to parse _id to string")
+	// }
+	// product.ID = id.Hex()
+
+	// // return response
+	// s.logger.Infof("create product request finished: %v", createdProduct)
+	// return &productPb.Product{}, nil
 }

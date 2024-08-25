@@ -43,7 +43,7 @@ func main() {
 	defer database.DisconnectOfDB(client)
 
 	userRepository := userRepo.NewUserRepository(client, vars.USER_SERVICE_DATABASE_NAME, vars.USER_SERVICE_DATABASE_COLLECTION)
-	userService := userService.NewUserService(userRepository, logger)
+	userService := userService.NewUserService(userRepository, logger, vars.SECRET_KEY, vars.TOKEN_DURATION_TIME)
 	userHandler := userHandler.NewUserHandler(userService, logger)
 	userPb.RegisterUserServiceServer(grpcServer, userHandler)
 

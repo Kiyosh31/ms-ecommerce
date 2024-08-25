@@ -22,7 +22,7 @@ func (s Service) Reactivate(ctx context.Context, email, password string) (*userP
 	if userToReactivate.IsActive {
 		return &userPb.User{}, errors.New("user already active")
 	}
-	err = utils.CheckPassword(userToReactivate.Password, password)
+	err = utils.IsPasswordValid(userToReactivate.Password, password)
 	if err != nil {
 		// log.Errorf("error incorrect password: %v", err)
 		return nil, fmt.Errorf("incorrect password: %v", err)

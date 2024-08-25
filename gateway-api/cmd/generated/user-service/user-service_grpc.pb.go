@@ -26,7 +26,8 @@ type UserServiceClient interface {
 	GetUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	UpdateUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	DeactivateUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
-	ReactivateUser(ctx context.Context, in *ReactivateUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	ReactivateUser(ctx context.Context, in *CredentialsUserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	LoginUser(ctx context.Context, in *CredentialsUserRequest, opts ...grpc.CallOption) (*TokenResponse, error)
 }
 
 type userServiceClient struct {
@@ -73,9 +74,18 @@ func (c *userServiceClient) DeactivateUser(ctx context.Context, in *UserRequest,
 	return out, nil
 }
 
-func (c *userServiceClient) ReactivateUser(ctx context.Context, in *ReactivateUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+func (c *userServiceClient) ReactivateUser(ctx context.Context, in *CredentialsUserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
 	out := new(UserResponse)
 	err := c.cc.Invoke(ctx, "/userPb.UserService/ReactivateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) LoginUser(ctx context.Context, in *CredentialsUserRequest, opts ...grpc.CallOption) (*TokenResponse, error) {
+	out := new(TokenResponse)
+	err := c.cc.Invoke(ctx, "/userPb.UserService/LoginUser", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +100,8 @@ type UserServiceServer interface {
 	GetUser(context.Context, *UserRequest) (*UserResponse, error)
 	UpdateUser(context.Context, *UserRequest) (*UserResponse, error)
 	DeactivateUser(context.Context, *UserRequest) (*UserResponse, error)
-	ReactivateUser(context.Context, *ReactivateUserRequest) (*UserResponse, error)
+	ReactivateUser(context.Context, *CredentialsUserRequest) (*UserResponse, error)
+	LoginUser(context.Context, *CredentialsUserRequest) (*TokenResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -110,8 +121,11 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UserRequest) 
 func (UnimplementedUserServiceServer) DeactivateUser(context.Context, *UserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeactivateUser not implemented")
 }
-func (UnimplementedUserServiceServer) ReactivateUser(context.Context, *ReactivateUserRequest) (*UserResponse, error) {
+func (UnimplementedUserServiceServer) ReactivateUser(context.Context, *CredentialsUserRequest) (*UserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReactivateUser not implemented")
+}
+func (UnimplementedUserServiceServer) LoginUser(context.Context, *CredentialsUserRequest) (*TokenResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -199,7 +213,7 @@ func _UserService_DeactivateUser_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _UserService_ReactivateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReactivateUserRequest)
+	in := new(CredentialsUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -211,7 +225,25 @@ func _UserService_ReactivateUser_Handler(srv interface{}, ctx context.Context, d
 		FullMethod: "/userPb.UserService/ReactivateUser",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ReactivateUser(ctx, req.(*ReactivateUserRequest))
+		return srv.(UserServiceServer).ReactivateUser(ctx, req.(*CredentialsUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CredentialsUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).LoginUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/userPb.UserService/LoginUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).LoginUser(ctx, req.(*CredentialsUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -242,6 +274,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ReactivateUser",
 			Handler:    _UserService_ReactivateUser_Handler,
+		},
+		{
+			MethodName: "LoginUser",
+			Handler:    _UserService_LoginUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

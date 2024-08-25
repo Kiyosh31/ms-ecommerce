@@ -12,7 +12,7 @@ import (
 
 func (h *Handler) Reactivate(w http.ResponseWriter, r *http.Request) {
 	h.logger.Infof("reactivate user request incoming: %v", customlogger.ReadRequestPayload(r))
-	var payload userPb.ReactivateUserRequest
+	var payload userPb.CredentialsUserRequest
 
 	if err := utils.ReadJSON(r, &payload); err != nil {
 		h.logger.Errorf("error reading payload: %v", err.Error())
@@ -20,7 +20,7 @@ func (h *Handler) Reactivate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errs := ValidateReactivateUser(&payload); len(errs) > 0 {
+	if errs := ValidateUserCredentials(&payload); len(errs) > 0 {
 		h.logger.Errorf("error validating payload: %v", errs)
 		utils.WriteErrors(w, http.StatusBadRequest, errs)
 		return

@@ -41,6 +41,16 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: USER_SERVICE_DATABASE_COLLECTION
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: SECRET_KEY
+            - name: TOKEN_DURATION_TIME
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: TOKEN_DURATION_TIME
 ---
 apiVersion: v1
 kind: Service

@@ -33,8 +33,8 @@ product:
 
 
 
-INVENTORY_PROTO_PATH=./inventory-service/proto/inventory-service.proto
-INVENTORY_PROTO_OUT_DIR=./inventory-service/proto/
+INVENTORY_PROTO_PATH=./inventory-service/cmd/proto/inventory-service.proto
+INVENTORY_PROTO_OUT_DIR=./inventory-service/cmd/proto/
 
 inventory:
 	@protoc --go_out=. --go_opt=paths=source_relative \

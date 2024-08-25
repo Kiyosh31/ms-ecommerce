@@ -5,10 +5,8 @@ option go_package="github.com/Kiyosh31/ms-ecommerce/inventory-service/inventoryP
 package inventoryPb;
 
 service InventoryService {
-  rpc CreateInventory(InventoryRequest) returns (InventoryResponse);
-  rpc GetInventory(InventoryRequest) returns (InventoryResponse);
+  rpc SearchInventory(InventoryRequest) returns (InventoryResponse);
   rpc UpdateInventory(InventoryRequest) returns (InventoryResponse);
-  rpc DeleteInventory(InventoryRequest) returns (InventoryResponse);
 }
 
 message Inventory {

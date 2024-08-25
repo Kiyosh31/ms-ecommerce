@@ -6,7 +6,7 @@ import (
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/proto"
 )
 
-func (h *Handler) ReactivateUser(ctx context.Context, in *userPb.ReactivateUserRequest) (*userPb.UserResponse, error) {
+func (h *Handler) ReactivateUser(ctx context.Context, in *userPb.CredentialsUserRequest) (*userPb.UserResponse, error) {
 	//consume service
 	res, err := h.userService.Reactivate(ctx, in.GetEmail(), in.GetPassword())
 	if err != nil {

@@ -10,6 +10,7 @@ type UserSchema struct {
 	Addresses []Address            `bson:"addresses"`
 	Orders    []primitive.ObjectID `bson:"orders"`
 	IsActive  bool                 `bson:"isActive"`
+	IsAdmin   bool                 `bson:"isAdmin"`
 }
 
 type Address struct {

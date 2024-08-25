@@ -15,6 +15,7 @@ type UserService interface {
 	Update(ctx context.Context, user domain.UserSchema) (*userPb.User, error)
 	Deactivate(ctx context.Context, id string) (bool, error)
 	Reactivate(ctx context.Context, email, password string) (*userPb.User, error)
+	Login(ctx context.Context, email string, password string) (*userPb.TokenResponse, error)
 }
 
 type UserRepository interface {

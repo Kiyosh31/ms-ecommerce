@@ -12,43 +12,43 @@ type EnvVars struct {
 	RABBITMQ_MESSAGING_ACCESS_ADDR                 string
 }
 
-func LoadEnvVars() (EnvVars, error) {
+func LoadEnvVars() (*EnvVars, error) {
 	PRODUCT_SERVICE_GRPC_ADDR, err := utils.GetEnvVar("PRODUCT_SERVICE_GRPC_ADDR")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
 	DB_CONNECTION_LINK, err := utils.GetEnvVar("DB_CONNECTION_LINK")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
 	PRODUCT_SERVICE_DATABASE_NAME, err := utils.GetEnvVar("PRODUCT_SERVICE_DATABASE_NAME")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
 	PRODUCT_SERVICE_PRODUCTS_DATABASE_COLLECTION, err := utils.GetEnvVar("PRODUCT_SERVICE_PRODUCTS_DATABASE_COLLECTION")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
 	PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION, err := utils.GetEnvVar("PRODUCT_SERVICE_CATEGORIES_DATABASE_COLLECTION")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
 	PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION, err := utils.GetEnvVar("PRODUCT_SERVICE_BRANDS_DATABASE_COLLECTION")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
 	RABBITMQ_MESSAGING_ACCESS_ADDR, err := utils.GetEnvVar("RABBITMQ_MESSAGING_ACCESS_ADDR")
 	if err != nil {
-		return EnvVars{}, err
+		return &EnvVars{}, err
 	}
 
-	return EnvVars{
+	return &EnvVars{
 		PRODUCT_SERVICE_GRPC_ADDR:                      PRODUCT_SERVICE_GRPC_ADDR,
 		DB_CONNECTION_LINK:                             DB_CONNECTION_LINK,
 		PRODUCT_SERVICE_DATABASE_NAME:                  PRODUCT_SERVICE_DATABASE_NAME,

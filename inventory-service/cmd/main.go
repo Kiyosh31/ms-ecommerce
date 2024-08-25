@@ -6,10 +6,11 @@ import (
 
 	customlogger "github.com/Kiyosh31/ms-ecommerce-common/custom_logger"
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
-	"github.com/Kiyosh31/ms-ecommerce/inventory-service/config"
-	inventoryPb "github.com/Kiyosh31/ms-ecommerce/inventory-service/proto"
-	"github.com/Kiyosh31/ms-ecommerce/inventory-service/service"
-	"github.com/Kiyosh31/ms-ecommerce/inventory-service/store"
+	inventoryHandler "github.com/Kiyosh31/ms-ecommerce/inventory-service/cmd/api/handlers/inventory"
+	"github.com/Kiyosh31/ms-ecommerce/inventory-service/cmd/internal/config"
+	inventoryRepo "github.com/Kiyosh31/ms-ecommerce/inventory-service/cmd/internal/repositories/mongo/inventory"
+	inventoryService "github.com/Kiyosh31/ms-ecommerce/inventory-service/cmd/internal/services/inventory"
+	inventoryPb "github.com/Kiyosh31/ms-ecommerce/inventory-service/cmd/proto"
 	"google.golang.org/grpc"
 )
 
@@ -39,9 +40,20 @@ func main() {
 	}
 	defer database.DisconnectOfDB(mongoClient)
 
-	inventoryStore := store.NewInventoryStore(mongoClient, vars.INVENTORY_SERVICE_DATABASE_NAME, vars.INVENTORY_SERVICE_DATABASE_COLLECTION)
-	svc := service.NewInventoryService(vars.INVENTORY_SERVICE_GRPC_ADDR, *inventoryStore, logger)
-	inventoryPb.RegisterInventoryServiceServer(grpServer, svc)
+	inventoryRepository := inventoryRepo.NewInventoryRepository(
+		mongoClient,
+		vars.INVENTORY_SERVICE_DATABASE_NAME,
+		vars.INVENTORY_SERVICE_DATABASE_COLLECTION,
+	)
+	inventoryService := inventoryService.NewInventoryService(
+		inventoryRepository,
+		logger,
+	)
+	inventoryHandler := inventoryHandler.NewInventoryHandler(
+		inventoryService,
+		logger,
+	)
+	inventoryPb.RegisterInventoryServiceServer(grpServer, inventoryHandler)
 
 	logger.Infof("gRPC server started in port: %v", vars.INVENTORY_SERVICE_GRPC_ADDR)
 	if err := grpServer.Serve(conn); err != nil {

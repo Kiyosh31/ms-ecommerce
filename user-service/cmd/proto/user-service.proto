@@ -9,7 +9,8 @@ service UserService {
   rpc GetUser(UserRequest) returns (UserResponse);
   rpc UpdateUser(UserRequest) returns (UserResponse);
   rpc DeactivateUser(UserRequest) returns (UserResponse);
-  rpc ReactivateUser(ReactivateUserRequest) returns(UserResponse);
+  rpc ReactivateUser(CredentialsUserRequest) returns(UserResponse);
+  rpc LoginUser(CredentialsUserRequest) returns(TokenResponse);
 }
 
 message User {
@@ -37,12 +38,17 @@ message UserRequest {
   optional User user = 2;
 }
 
-message ReactivateUserRequest {
+message CredentialsUserRequest {
   string email = 1;
   string password = 2;
+}
+
+message TokenResponse {
+  string token = 1;
 }
 
 message UserResponse {
   string message = 1;
   User user = 2;
+  TokenResponse token = 3;
 }

@@ -7,6 +7,7 @@ func (h *Handler) RegisterRoutes() {
 	h.router.HandleFunc("PUT /api/v1/user/{userId}", h.userHandler.Update)
 	h.router.HandleFunc("DELETE /api/v1/user/{userId}", h.userHandler.Deactivate)
 	h.router.HandleFunc("POST /api/v1/user/reactivate", h.userHandler.Reactivate)
+	h.router.HandleFunc("POST /api/v1/user/login", h.userHandler.Login)
 
 	// Product endpoints
 	h.router.HandleFunc("POST /api/v1/product", h.productHandler.CreateProduct)
@@ -27,9 +28,7 @@ func (h *Handler) RegisterRoutes() {
 	h.router.HandleFunc("DELETE /api/v1/brand/{brandId}", h.brandHandler.DeleteBrand)
 
 	// inventory endpoints
-	// router.HandleFunc("POST /api/v1/inventory", h.createInventory)
-	// router.HandleFunc("GET /api/v1/inventory/{inventoryId}", h.getInventory)
-	// router.HandleFunc("PUT /api/v1/inventory/{inventoryId}", h.updateInventory)
+	h.router.HandleFunc("GET /api/v1/inventory/{inventoryId}", h.inventoryHandler.Get)
 
 	// order endpoints
 	// router.HandleFunc("POST /api/v1/order", h.createOrder)

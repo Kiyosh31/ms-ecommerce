@@ -3,6 +3,7 @@ package user
 import (
 	"errors"
 
+	"github.com/Kiyosh31/ms-ecommerce-common/utils"
 	userPb "github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/generated/user-service"
 )
 
@@ -22,6 +23,8 @@ func ValidateUserPayload(in *userPb.User) []error {
 
 	if in.GetEmail() == "" {
 		errs = append(errs, errors.New("missing email"))
+	} else if !utils.IsValidEmail(in.GetEmail()) {
+		errs = append(errs, errors.New("email must be valid"))
 	}
 
 	if in.GetPassword() == "" {
@@ -61,11 +64,14 @@ func ValidateAddress(addresses []*userPb.Address) error {
 	return nil
 }
 
-func ValidateReactivateUser(payload *userPb.ReactivateUserRequest) []error {
+func ValidateUserCredentials(payload *userPb.CredentialsUserRequest) []error {
 	var errs []error
 
 	if payload.GetEmail() == "" {
 		errs = append(errs, errors.New("missing email"))
+	}
+	if !utils.IsValidEmail(payload.Email) {
+		errs = append(errs, errors.New("email must be valid"))
 	}
 
 	if payload.GetPassword() == "" {

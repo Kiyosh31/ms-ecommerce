@@ -5,27 +5,30 @@ import (
 
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/api/handlers/brand"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/api/handlers/category"
+	"github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/api/handlers/inventory"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/api/handlers/product"
 	"github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/api/handlers/user"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	router          *http.ServeMux
-	logger          *zap.SugaredLogger
-	userHandler     user.Handler
-	productHandler  product.Handler
-	categoryHandler category.Handler
-	brandHandler    brand.Handler
+	router           *http.ServeMux
+	logger           *zap.SugaredLogger
+	userHandler      *user.Handler
+	productHandler   *product.Handler
+	categoryHandler  *category.Handler
+	brandHandler     *brand.Handler
+	inventoryHandler *inventory.Handler
 }
 
 func NewGatewayHandler(
 	router *http.ServeMux,
 	logger *zap.SugaredLogger,
-	userHandler user.Handler,
-	productHandler product.Handler,
-	categoryHandler category.Handler,
-	brandHandler brand.Handler,
+	userHandler *user.Handler,
+	productHandler *product.Handler,
+	categoryHandler *category.Handler,
+	brandHandler *brand.Handler,
+	inventoryHandler *inventory.Handler,
 ) *Handler {
 	return &Handler{
 		router:          router,
