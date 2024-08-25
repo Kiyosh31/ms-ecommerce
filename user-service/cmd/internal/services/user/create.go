@@ -43,6 +43,7 @@ func (s Service) Create(ctx context.Context, user domain.UserSchema) (*userPb.Us
 		Name:      user.Name,
 		Email:     user.Email,
 		Password:  user.Password,
+		Role:      string(user.Role),
 		Addresses: userutils.MapAddressToProto(user.Addresses),
 		// Orders: ,
 	}, nil

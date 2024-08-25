@@ -14,7 +14,7 @@ import (
 func (s Service) Run() {
 	userServiceClient, userServiceConn := s.userService.GetService()
 	defer userServiceConn.Close()
-	userHandler := user.NewUserHandler(userServiceClient, s.logger, s.secretKey)
+	userHandler := user.NewUserHandler(userServiceClient, s.logger)
 
 	productServiceClient, productServiceConn := s.productService.GetService()
 	defer productServiceConn.Close()
@@ -36,6 +36,7 @@ func (s Service) Run() {
 	gatewayHandler := gateway.NewGatewayHandler(
 		router,
 		s.logger,
+		s.secretKey,
 		userHandler,
 		productHandler,
 		categoryHandler,

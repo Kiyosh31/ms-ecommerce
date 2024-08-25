@@ -2,6 +2,13 @@ package domain
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+type UserRole string
+
+const (
+	UserRoleUser   UserRole = "USER"
+	UserRoleVendor UserRole = "VENDOR"
+)
+
 type UserSchema struct {
 	ID        primitive.ObjectID   `bson:"_id,omitempty"`
 	Name      string               `bson:"name" binding:"required"`
@@ -10,7 +17,7 @@ type UserSchema struct {
 	Addresses []Address            `bson:"addresses"`
 	Orders    []primitive.ObjectID `bson:"orders"`
 	IsActive  bool                 `bson:"isActive"`
-	IsAdmin   bool                 `bson:"isAdmin"`
+	Role      UserRole             `bson:"role"`
 }
 
 type Address struct {

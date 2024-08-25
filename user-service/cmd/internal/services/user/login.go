@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/Kiyosh31/ms-ecommerce-common/utils"
 	userPb "github.com/Kiyosh31/ms-ecommerce/user-service/cmd/proto"
@@ -30,24 +29,15 @@ func (s Service) Login(ctx context.Context, email, password string) (*userPb.Tok
 		return nil, fmt.Errorf("incorrect password: %v", err)
 	}
 
-	// userId, err := strconv.ParseInt(user.ID.Hex(), 16, 64) // Base 16 for hex, 64-bit integer
-	// if err != nil {
-	// 	s.logger.Errorf("error parsing userId to int: %v", err)
-	// 	return nil, err
-	// }
-
-	tokenDuration, err := strconv.Atoi(s.tokenDurationTime)
+	duration, err := strconv.Atoi(s.tokenDurationTime)
 	if err != nil {
 		s.logger.Errorf("error converting tokenDuration: %v", err)
 		return nil, fmt.Errorf("invalid token duration: %v", err)
 	}
 
-	duration := time.Duration(tokenDuration) * time.Minute
-
-	accessToken, _, err := s.tokenCreator.CreateToken(
-		user.ID.Hex(),
+	accessToken, err := s.tokenCreator.CreateToken(
 		user.Email,
-		user.IsActive,
+		string(user.Role),
 		duration,
 	)
 	if err != nil {

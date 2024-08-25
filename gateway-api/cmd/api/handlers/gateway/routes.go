@@ -1,9 +1,17 @@
 package gateway
 
+import (
+	"net/http"
+
+	"github.com/Kiyosh31/ms-ecommerce/gateway-api/cmd/api/handlers/middlewares"
+)
+
 func (h *Handler) RegisterRoutes() {
+	authMiddleware := middlewares.NewMiddleware(h.secretKey)
+
 	// User endpoints
 	h.router.HandleFunc("POST /api/v1/user", h.userHandler.Create)
-	h.router.HandleFunc("GET /api/v1/user/{userId}", h.userHandler.Get)
+	h.router.Handle("GET /api/v1/user/{userId}", authMiddleware.UserAuthMiddleware(http.HandlerFunc(h.userHandler.Get)))
 	h.router.HandleFunc("PUT /api/v1/user/{userId}", h.userHandler.Update)
 	h.router.HandleFunc("DELETE /api/v1/user/{userId}", h.userHandler.Deactivate)
 	h.router.HandleFunc("POST /api/v1/user/reactivate", h.userHandler.Reactivate)

@@ -31,6 +31,10 @@ func ValidateUserPayload(in *userPb.User) []error {
 		errs = append(errs, errors.New("missing password"))
 	}
 
+	if in.GetRole() == "" {
+		errs = append(errs, errors.New("missing role"))
+	}
+
 	return errs
 }
 

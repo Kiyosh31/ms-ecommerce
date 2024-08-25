@@ -46,11 +46,11 @@ spec:
                 secretKeyRef:
                   name: secrets
                   key: SECRET_KEY
-            - name: TOKEN_DURATION_TIME
+            - name: TOKEN_DURATION_TIME_MINUTES
               valueFrom:
                 secretKeyRef:
                   name: secrets
-                  key: TOKEN_DURATION_TIME
+                  key: TOKEN_DURATION_TIME_MINUTES
 ---
 apiVersion: v1
 kind: Service

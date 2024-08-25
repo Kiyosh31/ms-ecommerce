@@ -14,6 +14,7 @@ import (
 type Handler struct {
 	router           *http.ServeMux
 	logger           *zap.SugaredLogger
+	secretKey        string
 	userHandler      *user.Handler
 	productHandler   *product.Handler
 	categoryHandler  *category.Handler
@@ -24,6 +25,7 @@ type Handler struct {
 func NewGatewayHandler(
 	router *http.ServeMux,
 	logger *zap.SugaredLogger,
+	secretKey string,
 	userHandler *user.Handler,
 	productHandler *product.Handler,
 	categoryHandler *category.Handler,
@@ -33,6 +35,7 @@ func NewGatewayHandler(
 	return &Handler{
 		router:          router,
 		logger:          logger,
+		secretKey:       secretKey,
 		userHandler:     userHandler,
 		productHandler:  productHandler,
 		categoryHandler: categoryHandler,

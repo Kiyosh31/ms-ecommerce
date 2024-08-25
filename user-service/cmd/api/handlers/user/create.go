@@ -28,6 +28,7 @@ func (h *Handler) CreateUser(ctx context.Context, in *userPb.UserRequest) (*user
 		Email:     in.GetUser().GetEmail(),
 		Password:  hashedPassword,
 		Addresses: addresses,
+		Role:      domain.UserRole(in.GetUser().GetRole()),
 		// Orders: ,
 		IsActive: true,
 	}

@@ -12,7 +12,7 @@ type envVars struct {
 	USER_SERVICE_DATABASE_NAME       string
 	USER_SERVICE_DATABASE_COLLECTION string
 	SECRET_KEY                       string
-	TOKEN_DURATION_TIME              string
+	TOKEN_DURATION_TIME_MINUTES      string
 }
 
 const minSecretKeyLength = 32
@@ -46,7 +46,7 @@ func LoadEnvVars() (*envVars, error) {
 		return &envVars{}, fmt.Errorf("SECRET_KEY must be at least %d characters", minSecretKeyLength)
 	}
 
-	TOKEN_DURATION_TIME, err := utils.GetEnvVar("TOKEN_DURATION_TIME")
+	TOKEN_DURATION_TIME_MINUTES, err := utils.GetEnvVar("TOKEN_DURATION_TIME_MINUTES")
 	if err != nil {
 		return &envVars{}, err
 	}
@@ -57,6 +57,6 @@ func LoadEnvVars() (*envVars, error) {
 		DB_CONNECTION_LINK:               DB_CONNECTION_LINK,
 		USER_SERVICE_DATABASE_COLLECTION: USER_SERVICE_DATABASE_COLLECTION,
 		SECRET_KEY:                       SECRET_KEY,
-		TOKEN_DURATION_TIME:              TOKEN_DURATION_TIME,
+		TOKEN_DURATION_TIME_MINUTES:      TOKEN_DURATION_TIME_MINUTES,
 	}, nil
 }
