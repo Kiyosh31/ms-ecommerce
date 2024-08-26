@@ -46,8 +46,8 @@ inventory:
 
 
 
-ORDER_PROTO_PATH=./order-service/proto/order-service.proto
-ORDER_PROTO_OUT_DIR=./order-service/proto/
+ORDER_PROTO_PATH=./order-service/cmd/proto/order-service.proto
+ORDER_PROTO_OUT_DIR=./order-service/cmd/proto/
 
 order:
 	@protoc --go_out=. --go_opt=paths=source_relative \
