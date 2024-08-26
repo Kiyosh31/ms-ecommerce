@@ -59,8 +59,8 @@ order:
 
 
 
-PAYMENT_PROTO_PATH=./payment-service/proto/payment-service.proto
-PAYMENT_PROTO_OUT_DIR=./payment-service/proto/
+PAYMENT_PROTO_PATH=./payment-service/cmd/proto/payment-service.proto
+PAYMENT_PROTO_OUT_DIR=./payment-service/cmd/proto/
 
 payment:
 	@protoc --go_out=. --go_opt=paths=source_relative \

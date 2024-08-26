@@ -6,10 +6,11 @@ import (
 
 	customlogger "github.com/Kiyosh31/ms-ecommerce-common/custom_logger"
 	"github.com/Kiyosh31/ms-ecommerce-common/database"
-	"github.com/Kiyosh31/ms-ecommerce/payment-service/config"
-	paymentPb "github.com/Kiyosh31/ms-ecommerce/payment-service/proto"
-	"github.com/Kiyosh31/ms-ecommerce/payment-service/service"
-	"github.com/Kiyosh31/ms-ecommerce/payment-service/store"
+	"github.com/Kiyosh31/ms-ecommerce/payment-service/cmd/api/handler/payment"
+	"github.com/Kiyosh31/ms-ecommerce/payment-service/cmd/internal/config"
+	paymentRepo "github.com/Kiyosh31/ms-ecommerce/payment-service/cmd/internal/repositories/mongo/payment"
+	paymentService "github.com/Kiyosh31/ms-ecommerce/payment-service/cmd/internal/services/payment"
+	paymentPb "github.com/Kiyosh31/ms-ecommerce/payment-service/cmd/proto"
 	"google.golang.org/grpc"
 )
 
@@ -39,9 +40,10 @@ func main() {
 	}
 	defer database.DisconnectOfDB(mongoClient)
 
-	userStore := store.NewPaymentStore(mongoClient, vars.PAYMENT_SERVICE_DATABASE_NAME, vars.PAYMENT_SERVICE_DATABASE_COLLECTION)
-	svc := service.NewPaymentService(vars.PAYMENT_SERVICE_GRPC_ADDR, *userStore, logger)
-	paymentPb.RegisterPaymentServiceServer(grpServer, svc)
+	paymentRepo := paymentRepo.NewPaymentRepository(mongoClient, vars.PAYMENT_SERVICE_DATABASE_NAME, vars.PAYMENT_SERVICE_DATABASE_COLLECTION)
+	paymentService := paymentService.NewUserService(paymentRepo, logger)
+	paymentHandler := payment.NewPaymentHandler(paymentService, logger)
+	paymentPb.RegisterPaymentServiceServer(grpServer, paymentHandler)
 
 	logger.Infof("gRPC server started in port: %v", vars.PAYMENT_SERVICE_GRPC_ADDR)
 	if err := grpServer.Serve(conn); err != nil {
